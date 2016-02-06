@@ -6,15 +6,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb")  # flag for debug with GDB
 
-include_directories("tester/" "huffman/")
+include_directories("tester/" "huffman/" "codec/")
 
 set(SOURCES
     main.cpp
-    huffman/codec.cpp
+    huffman/huffman.cpp
     tester/tester.cpp)
 
 set(HEADERS
-    huffman/codec.h
+    codec/codec.h
+    huffman/huffman.h
     tester/tester.h)
 
 add_executable(tester ${SOURCES})
