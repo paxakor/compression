@@ -1,21 +1,26 @@
 #include <time.h>
+#include <experimental/algorithm>
 #include <fstream>
 #include <iostream>
 #include "tester.h"
 
 template <typename Iter>
-void select_sample(StringViewVector& sample, Iter begin, Iter end,
+void select_sample(Tester::StringViewVector& sample, Iter begin, Iter end,
   size_t sample_size) {
   std::experimental::sample(begin, end, std::back_inserter(sample),
     sample_size, std::mt19937(std::random_device()()));
 }
 
 void Tester::learn_codec() {
-  std::cout << "Start learning" << std::endl;
+  std::cout << "Learning" << std::endl;
   time_t start = time(nullptr);
   StringViewVector sample;
-  select_sample(sample, this->data.begin(), this->data.end(),
-    this->data.size() * 0.1);
+  std::experimental::sample(this->data.begin(), this->data.end(),
+    std::back_inserter(sample), this->codec->sample_size(this->data.size()),
+    std::mt19937(std::random_device()()));
+  // select_sample(sample, this->data.begin(), this->data.end(),
+  //   this->codec->sample_size(this->data.size()));
+  std::cout << "Sample selected" << std::endl;
   this->codec->learn(sample);
   std::cout << "Learning ended in " << time(nullptr) - start <<
     " seconds" << std::endl;
@@ -27,6 +32,9 @@ void Tester::read_data(const std::string& data_file) {
   while (input.good()) {
     std::string record;
     input >> record;
+    this->data_str.push_back(record);
+  }
+  for (const auto& record : this->data_str) {
     this->data.push_back(record);
   }
   input.close();
@@ -41,7 +49,7 @@ void Tester::test_encode() {
   std::cout << "Start encoding" << std::endl;
   time_t start = time(nullptr);
   for (const auto& record : this->data) {
-    std::experimental::string_view out;
+    std::string out;
     this->codec->encode(out, record);
     this->encoded.push_back(out);
   }
@@ -53,7 +61,7 @@ void Tester::test_decode() {
   std::cout << "Start decoding" << std::endl;
   time_t start = time(nullptr);
   for (const auto& record : this->encoded) {
-    std::experimental::string_view out;
+    std::string out;
     this->codec->decode(out, record);
     this->decoded.push_back(out);
   }

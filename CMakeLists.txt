@@ -9,8 +9,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb")  # flag for debug with GDB
 include_directories("tester/" "huffman/" "codec/")
 
 set(SOURCES
-    main.cpp
     huffman/huffman.cpp
+    tester/main.cpp
     tester/tester.cpp)
 
 set(HEADERS
