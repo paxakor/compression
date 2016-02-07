@@ -5,7 +5,7 @@ int main () {
   Tester tester;
   Codecs::HuffmanCodec huffman;
   tester.set_codec(huffman);
-  tester.read_data("../data/data4");
+  tester.read_data("../data/data2");
   tester.learn_codec();
   tester.test_encode();
   tester.test_decode();
