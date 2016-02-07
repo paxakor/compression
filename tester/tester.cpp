@@ -4,20 +4,16 @@
 #include <iostream>
 #include "tester.h"
 
-template <typename Iter>
-void select_sample(Tester::StringViewVector& sample, Iter begin, Iter end,
-  size_t sample_size) {
-  std::experimental::sample(begin, end, std::back_inserter(sample),
+template <typename Container, typename Iter>
+void select_sample(Container& cont, Iter begin, Iter end, size_t sample_size) {
+  std::experimental::sample(begin, end, std::back_inserter(cont),
     sample_size, std::mt19937(std::random_device()()));
 }
 
 void Tester::learn_codec() {
   std::cout << "Learning" << std::endl;
   time_t start = time(nullptr);
-  StringViewVector sample;
-  // std::experimental::sample(this->data.begin(), this->data.end(),
-  //   std::back_inserter(sample), this->codec->sample_size(this->data.size()),
-  //   std::mt19937(std::random_device()()));
+  vector<std::experimental::string_view> sample;
   select_sample(sample, this->data.begin(), this->data.end(),
     this->codec->sample_size(this->data.size()));
   std::cout << "Sample selected" << std::endl;
@@ -26,15 +22,12 @@ void Tester::learn_codec() {
     " seconds" << std::endl;
 }
 
-void Tester::read_data(const std::string& data_file) {
+void Tester::read_data(const string& data_file) {
   std::cout << "Reading data from " << data_file << std::endl;
   std::ifstream input(data_file);
   while (input.good()) {
-    std::string record;
+    string record;
     input >> record;
-    this->data_str.push_back(record);
-  }
-  for (const auto& record : this->data_str) {
     this->data.push_back(record);
   }
   input.close();
@@ -49,7 +42,7 @@ void Tester::test_encode() {
   std::cout << "Start encoding" << std::endl;
   time_t start = time(nullptr);
   for (const auto& record : this->data) {
-    std::string out;
+    string out;
     this->codec->encode(out, record);
     this->encoded.push_back(out);
   }
