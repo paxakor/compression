@@ -13,7 +13,7 @@ public:
   void load(const string_view&) override;
 
   size_t sample_size(size_t) const override;
-  void learn(const StringViewVector&) override;
+  void learn(const vector<string_view>&) override;
 
   void reset() override;
 };

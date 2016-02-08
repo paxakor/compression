@@ -27,7 +27,7 @@ void Tester::read_data(const string& data_file) {
   std::ifstream input(data_file);
   while (input.good()) {
     string record;
-    input >> record;
+    std::getline(input, record);
     this->data.push_back(record);
   }
   input.close();
