@@ -2,7 +2,7 @@
 #include <experimental/algorithm>
 #include <fstream>
 #include <iostream>
-#include "tester.h"
+#include "tester/tester.h"
 
 template <typename Container, typename Iter>
 void select_sample(Container& cont, Iter begin, Iter end, size_t sample_size) {

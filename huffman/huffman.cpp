@@ -1,6 +1,7 @@
-#include "huffman.h"
-#include <unordered_map>
 #include <iostream>  // for debug
+#include <unordered_map>
+#include <queue>
+#include "huffman/huffman.h"
 
 namespace Codecs {
 
@@ -24,24 +25,21 @@ size_t HuffmanCodec::sample_size(size_t records_total) const {
 }
 
 void HuffmanCodec::learn(const vector<string_view>& all_samples) {
-  std::unordered_map<char, size_t> ch_count;
-  size_t total_ch = 0;
+  std::unordered_map<char, size_t> frequency;
   for (const auto& record : all_samples) {
-    total_ch += record.size();
     for (const auto& ch : record) {
-      auto it = ch_count.find(ch);
-      if (it != ch_count.end()) {
-        ++(it->second);
-      } else {
-        ch_count.insert({ch, 0});
+      auto it = frequency.find(ch);
+      if (it == frequency.end()) {
+        frequency.insert({ch, 0});
       }
+      ++(it->second);
     }
   }
-  std::unordered_map<char, float> probability;
-  for (auto it = ch_count.begin(); it != ch_count.end(); ++it) {
-    float p = static_cast<float>(it->second) / total_ch;
-    probability.insert({it->first, p});
+  std::priority_queue< std::pair<size_t, char> > heap;
+  for (const auto& ch : frequency) {
+    heap.push({ch.second, ch.first});
   }
+
 }
 
 void HuffmanCodec::reset() {

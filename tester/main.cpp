@@ -1,7 +1,7 @@
 #include <time.h>
 #include <iostream>
-#include "huffman.h"
-#include "tester.h"
+#include "huffman/huffman.h"
+#include "tester/tester.h"
 
 int main () {
   time_t start = time(nullptr);

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "codec.h"
+#include "codec/codec.h"
+#include "huffman/tree.h"
 
 namespace Codecs {
 
@@ -16,6 +17,8 @@ public:
   void learn(const vector<string_view>&) override;
 
   void reset() override;
+protected:
+  Tree tree;
 };
 
 }  // namespace Codecs
