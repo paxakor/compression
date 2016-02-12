@@ -13,6 +13,7 @@ int main () {
   tester.test_encode();
   tester.test_decode();
   tester.test_correctness();
+  huffman.reset();
   std::cout << "Program ended in " << time(nullptr) - start <<
     " seconds" << std::endl;
   return 0;

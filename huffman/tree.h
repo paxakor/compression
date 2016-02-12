@@ -1,23 +1,25 @@
 #pragma once
 
-#include <inttypes.h>
 #include <stddef.h>
+#include <string>
 #include <vector>
 
 class Node {
 public:
   Node();
+  Node(std::string);
+  Node(size_t, size_t, std::string);
+  Node(const Node&);
+  Node& operator=(const Node&);
   bool is_left_child;
-  uint16_t parent;
-  uint16_t child_l;
-  uint16_t child_r;
+  size_t parent;
+  size_t child_l;
+  size_t child_r;
+  std::string str;
 };
 
-class Tree {
+class Tree : public std::vector<Node> {
 public:
-  void resize(size_t);
-  void push(const Node&);
-protected:
-  std::vector<Node> tree;
-  size_t iter;
+  size_t add_node(const Node&);
+  std::vector<bool> find_way(size_t) const;
 };
