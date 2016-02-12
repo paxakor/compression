@@ -1,27 +1,48 @@
 #include <iostream>  // for debug
 #include "huffman/huffman.h"
+#include "huffman/utils.h"
 
 namespace Codecs {
 
 void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
   encoded = raw.to_string();
 }
+
 void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
   raw = encoded.to_string();
 }
 
 string HuffmanCodec::save() const {
   string res;
-  
+  res += save_int(this->tree.size());
+  for (const auto& nd : this->tree) {
+    res += nd.save();
+  }
+  res += save_int(this->table.size());
+  for (const auto& ch : this->table) {
+    res += ch.first;
+    res += save_vec_bool(ch.second);
+  }
   return res;
 }
 
 void HuffmanCodec::load(const string_view& config) {
-
+  string config_str = config.to_string();
+  string::iterator iter = config_str.begin();
+  const string::iterator end = config_str.end();
+  const size_t tree_sz = load_int(iter, end);
+  this->tree.resize(tree_sz);
+  for (size_t i = 0; i < tree_sz; ++i) {
+    this->tree.push_back(Node(iter, end));
+  }
+  const size_t table_sz = load_int(iter, end);
+  for (size_t i = 0; i < table_sz; ++i) {
+    char ch = *(iter++);
+  }
 }
 
 size_t HuffmanCodec::sample_size(size_t records_total) const {
-  return 0.1 * records_total;
+  return records_total * 0.1;
 }
 
 void HuffmanCodec::learn(const vector<string_view>& all_samples) {
@@ -70,9 +91,9 @@ void HuffmanCodec::build_tree(Heap& heap) {
 
 void HuffmanCodec::build_table() {
   size_t abc = this->table.size();
-  size_t tsz = 2 * abc - 1;
+  size_t tree_sz = 2 * abc - 1;
   for (size_t i = 0; i < abc; ++i) {
-    auto ch = this->tree[tsz - i - 1].str[0];
+    auto ch = this->tree[tree_sz - i - 1].str[0];
     auto it = this->table.find(ch);
     it->second = this->tree.find_way(i);
   }

@@ -1,5 +1,5 @@
 #include "huffman/tree.h"
-#include <iostream>
+#include "huffman/utils.h"
 
 Node::Node()
   : is_left_child(false)
@@ -33,6 +33,13 @@ Node::Node(const Node& nd)
   , str(nd.str)
 {}
 
+Node::Node(std::string::iterator& iter, const std::string::iterator& end) {
+  this->is_left_child = load_int(iter, end);
+  this->parent = load_int(iter, end);
+  this->child_l = load_int(iter, end);
+  this->child_r = load_int(iter, end);
+}
+
 Node& Node::operator=(const Node& nd) {
   this->is_left_child = nd.is_left_child;
   this->parent = nd.parent;
@@ -40,6 +47,15 @@ Node& Node::operator=(const Node& nd) {
   this->child_r = nd.child_r;
   this->str = nd.str;
   return *this;
+}
+
+std::string Node::save() const {
+  std::string res;
+  res += save_int(this->is_left_child);
+  res += save_int(this->parent);
+  res += save_int(this->child_l);
+  res += save_int(this->child_r);
+  return res;
 }
 
 size_t Tree::add_node(const Node& nd) {

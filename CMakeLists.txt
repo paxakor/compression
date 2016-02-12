@@ -11,6 +11,7 @@ include_directories("./" "tester/" "huffman/" "codec/")
 set(SOURCES
     huffman/huffman.cpp
     huffman/tree.cpp
+    huffman/utils.cpp
     tester/main.cpp
     tester/tester.cpp)
 
@@ -18,6 +19,7 @@ set(HEADERS
     codec/codec.h
     huffman/huffman.h
     huffman/tree.h
+    huffman/utils.h
     tester/tester.h)
 
 add_executable(tester ${SOURCES})

@@ -10,7 +10,10 @@ public:
   Node(std::string);
   Node(size_t, size_t, std::string);
   Node(const Node&);
+  Node(std::string::iterator&, const std::string::iterator&);
   Node& operator=(const Node&);
+  std::string save() const;
+
   bool is_left_child;
   size_t parent;
   size_t child_l;
