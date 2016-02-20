@@ -77,15 +77,3 @@ std::vector<bool> Tree::find_way(char ch) const {
   std::reverse(vec.begin(), vec.end());
   return vec;
 }
-
-char Tree::find_char(bitstream& bs) const {
-  Node nd = this->back();
-  while (nd.str == 0) {
-    if (bs.get_next()) {
-      nd = this->at(nd.child_l);
-    } else {
-      nd = this->at(nd.child_r);
-    }
-  }
-  return nd.str;
-}

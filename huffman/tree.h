@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include "huffman/bitstream.h"
 
 class Node {
 public:
@@ -26,7 +25,6 @@ class Tree : public std::vector<Node> {
 public:
   size_t add_node(const Node&);
   std::vector<bool> find_way(char) const;
-  char find_char(bitstream&) const;
 protected:
   std::unordered_map<char, size_t> char_to_index;
 };

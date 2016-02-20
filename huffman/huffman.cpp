@@ -1,7 +1,6 @@
 #include <iostream>  // for debug
 #include "common/defs.h"
 #include "common/utils.h"
-#include "huffman/bitstream.h"
 #include "huffman/huffman.h"
 
 namespace Codecs {
@@ -31,10 +30,29 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
 
 void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
   const size_t rest = encoded.back();
-  bitstream bs(encoded, (encoded.size() - 2) * CHAR_SIZE + rest);
-  while (!bs.ended()) {
-    raw.push_back(this->tree.find_char(bs));
+  const size_t size = (encoded.size() - 2) * CHAR_SIZE + rest;
+  size_t index = 0;
+  size_t iter = 0;
+  char ch = encoded[0];
+  for (size_t j = 0; j < size;) {
+    const Node* nd = &this->tree.back();
+    while (nd->str == 0) {
+      if (ch & (1 << (CHAR_SIZE - 1))) {
+        nd = &this->tree[nd->child_l];
+      } else {
+        nd = &this->tree[nd->child_r];
+      }
+      ++iter;
+      ++j;
+      ch = ch << 1;
+      if (iter == CHAR_SIZE) {
+        ch = encoded[++index];
+        iter = 0;
+      }
+    }
+    raw.push_back(nd->str);
   }
+  // std::cout << raw << std::endl;
 }
 
 string HuffmanCodec::save() const {

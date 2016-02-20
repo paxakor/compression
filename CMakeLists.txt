@@ -10,7 +10,6 @@ include_directories("./" "tester/" "huffman/" "codec/")
 
 set(SOURCES
     common/utils.cpp
-    huffman/bitstream.cpp
     huffman/huffman.cpp
     huffman/tree.cpp
     tester/config.cpp
@@ -21,7 +20,6 @@ set(HEADERS
     codec/codec.h
     common/defs.h
     common/utils.h
-    huffman/bitstream.h
     huffman/huffman.h
     huffman/tree.h
     tester/config.h
