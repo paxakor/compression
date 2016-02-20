@@ -1,4 +1,4 @@
-#include <time.h>
+#include <ctime>
 #include <experimental/algorithm>
 #include <fstream>
 #include <iostream>
@@ -39,6 +39,7 @@ void Tester::save_encoded(const string& output_file) const {
   for (const auto& record : this->encoded) {
     output << record << std::endl;
   }
+  output.clear();
 }
 
 void Tester::set_codec(Codecs::CodecIFace& codec) {
@@ -69,24 +70,50 @@ void Tester::test_decode() {
     " seconds" << std::endl;
 }
 
-void Tester::test_correctness() {
+void Tester::test_correctness() const {
   std::cout << "Starting to check correctness" << std::endl;
-  if (this->encoded.size() != this->decoded.size()) {
+  if (this->data.size() != this->decoded.size()) {
     std::cout << "Error: wrong data size" << std::endl;
     return;
   }
-  auto enc_iter = this->encoded.begin();
+  auto dat_iter = this->data.begin();
   auto dec_iter = this->decoded.begin();
   size_t error_count = 0;
-  size_t total = this->encoded.size();
-  while (enc_iter != this->encoded.end() && dec_iter != this->decoded.end()) {
-    if (*enc_iter != *dec_iter) {
+  size_t total = this->data.size();
+  while (dat_iter != this->data.end() && dec_iter != this->decoded.end()) {
+    if (*dat_iter != *dec_iter) {
       ++error_count;
     }
-    ++enc_iter;
+    ++dat_iter;
     ++dec_iter;
   }
   float errors = 100.0 * error_count / total;
   std::cout << "Checked " << total << " records" << std::endl;
   std::cout << "Errors: " << errors << "%" << std::endl;
+}
+
+void Tester::test_size() const {
+  const float a = print_size(this->data,    "data   ");
+  const float b = print_size(this->encoded, "encoded");
+  const float c = print_size(this->decoded, "decoded");
+  std::cout << "Compressed on " << (1 - b / a) * 100 << "%" << std::endl;
+}
+
+size_t print_size(const vector<string>& vec, const string& name) {
+  size_t sz = 1;
+  for (const auto& s : vec) {
+    sz += s.size() + 1;
+  }
+  const size_t bytes = sz;
+  const size_t mod = 1024;
+  const vector<string> unit_name = {"B", "KiB", "MiB", "GiB", "TiB", "PiB",
+    "EiB", "ZiB", "YiB"};
+  size_t i = 0;
+  while (sz > mod) {
+    sz /= mod;
+    ++i;
+  }
+  std::cout << "Size of " << name << " = " <<
+    sz << " " << unit_name[i] << std::endl;
+  return bytes;
 }

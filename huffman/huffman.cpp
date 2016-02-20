@@ -1,15 +1,40 @@
 #include <iostream>  // for debug
+#include "common/defs.h"
+#include "common/utils.h"
+#include "huffman/bitstream.h"
 #include "huffman/huffman.h"
-#include "huffman/utils.h"
 
 namespace Codecs {
 
 void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
-  encoded = raw.to_string();
+  char code = 0;
+  size_t i = 0;
+  for (const auto& ch : raw) {
+    const auto& code_it = this->table.find(ch);
+    if (code_it == this->table.end()) {
+      std::cerr << "FUCK THIS SHIT: " << ch << std::endl;  // TODO
+      continue;
+    }
+    for (const auto& bit : code_it->second) {
+      if (i == CHAR_SIZE) {
+        encoded.push_back(code);
+        code = 0;
+        i = 0;
+      }
+      code = (code << 1) + bit;
+      ++i;
+    }
+  }
+  encoded.push_back(code << (CHAR_SIZE - i));
+  encoded.push_back(static_cast<char>(i));
 }
 
 void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
-  raw = encoded.to_string();
+  const size_t rest = encoded.back();
+  bitstream bs(encoded, (encoded.size() - 2) * CHAR_SIZE + rest);
+  while (!bs.ended()) {
+    raw.push_back(this->tree.find_char(bs));
+  }
 }
 
 string HuffmanCodec::save() const {
@@ -21,7 +46,7 @@ string HuffmanCodec::save() const {
   res += save_int(this->table.size());
   for (const auto& ch : this->table) {
     res += ch.first;
-    res += save_vec_bool(ch.second);
+    res += save_bools(ch.second);
   }
   return res;
 }
@@ -38,11 +63,13 @@ void HuffmanCodec::load(const string_view& config) {
   const size_t table_sz = load_int(iter, end);
   for (size_t i = 0; i < table_sz; ++i) {
     char ch = *(iter++);
+    auto vec = load_bools(iter, end);
+    this->table.insert({ch, vec});
   }
 }
 
 size_t HuffmanCodec::sample_size(size_t records_total) const {
-  return records_total * 0.1;
+  return records_total * 1;
 }
 
 void HuffmanCodec::learn(const vector<string_view>& all_samples) {
@@ -65,37 +92,29 @@ Heap HuffmanCodec::precalc(const vector<string_view>& all_samples) {
   }
   Heap heap;
   for (const auto& ch : frequency) {
-    Node nd(string(1, ch.first));
+    Node nd(ch.first);
     size_t position = this->tree.add_node(nd);
     heap.push({ch.second, position});
-    this->table.insert({ch.first, {}});
   }
   return heap;
 }
 
 void HuffmanCodec::build_tree(Heap& heap) {
-  size_t iter = this->tree.size();
   while (heap.size() > 1) {
     auto a = heap.top();
     heap.pop();
     auto b = heap.top();
     heap.pop();
-    heap.push({a.first + b.first, iter++});
-    Node na = this->tree[a.second];
-    Node nb = this->tree[b.second];
-    Node result(a.second, b.second, na.str + nb.str);
-    this->tree.add_node(result);
+    heap.push({a.first + b.first, this->tree.size()});
+    this->tree.add_node(Node(a.second, b.second));
   }
   this->tree.back().parent = this->tree.size();
 }
 
 void HuffmanCodec::build_table() {
-  size_t abc = this->table.size();
-  size_t tree_sz = 2 * abc - 1;
-  for (size_t i = 0; i < abc; ++i) {
-    auto ch = this->tree[tree_sz - i - 1].str[0];
-    auto it = this->table.find(ch);
-    it->second = this->tree.find_way(i);
+  for (size_t i = 0; i < (this->tree.size() + 1) / 2; ++i) {
+    const auto ch = this->tree[i].str;
+    this->table.insert({ch, this->tree.find_way(ch)});
   }
 }
 

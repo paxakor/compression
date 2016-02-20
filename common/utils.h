@@ -1,10 +1,11 @@
 #pragma once
 
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 #include <vector>
 
 using std::string;
+using std::vector;
 
 template <typename Int>
 string save_int(Int number) {
@@ -19,6 +20,7 @@ string save_int(Int number) {
   return str;
 }
 
-string save_vec_bool(const std::vector<bool>&);
-
+string save_bools(const vector<bool>&);
 size_t load_int(string::iterator&, const string::iterator&);
+vector<bool> load_bools(string::iterator&, const string::iterator&);
+vector<string> split(const string&, size_t = 0, char = ' ');
