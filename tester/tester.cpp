@@ -12,13 +12,13 @@ void select_sample(Container& cont, Iter begin, Iter end, size_t sample_size) {
 
 void Tester::learn_codec() {
   std::cout << "Learning" << std::endl;
-  time_t start = time(nullptr);
+  auto start = 1.0 * clock();
   vector<std::experimental::string_view> sample;
   select_sample(sample, this->data.begin(), this->data.end(),
     this->codec->sample_size(this->data.size()));
   std::cout << "Sample selected" << std::endl;
   this->codec->learn(sample);
-  std::cout << "Learning ended in " << time(nullptr) - start <<
+  std::cout << "Learning ended in " << (clock() - start) / CLOCKS_PER_SEC <<
     " seconds" << std::endl;
 }
 
@@ -48,25 +48,25 @@ void Tester::set_codec(Codecs::CodecIFace& codec) {
 
 void Tester::test_encode() {
   std::cout << "Start encoding" << std::endl;
-  time_t start = time(nullptr);
+  auto start = 1.0 * clock();
   for (const auto& record : this->data) {
     string out;
     this->codec->encode(out, record);
     this->encoded.push_back(out);
   }
-  std::cout << "Encoding ended in " << time(nullptr) - start <<
+  std::cout << "Encoding ended in " << (clock() - start) / CLOCKS_PER_SEC <<
     " seconds" << std::endl;
 }
 
 void Tester::test_decode() {
   std::cout << "Start decoding" << std::endl;
-  time_t start = time(nullptr);
+  auto start = 1.0 * clock();
   for (const auto& record : this->encoded) {
     std::string out;
     this->codec->decode(out, record);
     this->decoded.push_back(out);
   }
-  std::cout << "Decoding ended in " << time(nullptr) - start <<
+  std::cout << "Decoding ended in " << (clock() - start) / CLOCKS_PER_SEC <<
     " seconds" << std::endl;
 }
 
