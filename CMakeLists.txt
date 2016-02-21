@@ -26,4 +26,4 @@ set(HEADERS
     tester/tester.h)
 
 add_executable(tester ${SOURCES})
-file(COPY tester/tester.conf DESTINATION ./)
+file(COPY tester.conf DESTINATION ./)

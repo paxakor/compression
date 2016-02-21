@@ -7,7 +7,7 @@ namespace Codecs {
 
 void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
   char code = 0;
-  size_t i = 0;
+  size_t i = 3;  // Here I hope, that CHAR_SIZE == 8. TODO
   for (const auto& ch : raw) {
     const auto& code_it = this->table.find(ch);
     if (code_it == this->table.end()) {
@@ -25,16 +25,16 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
     }
   }
   encoded.push_back(code << (CHAR_SIZE - i));
-  encoded.push_back(static_cast<char>(i));
+  encoded[0] |= static_cast<char>(i - 1) << 5;
 }
 
 void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
-  const size_t rest = encoded.back();
-  const size_t size = (encoded.size() - 2) * CHAR_SIZE + rest;
+  const size_t rest = ((encoded[0] >> 5) & 7) + 1;
+  const size_t size = (encoded.size() - 1) * CHAR_SIZE + rest;
   size_t index = 0;
-  size_t iter = 0;
-  char ch = encoded[0];
-  for (size_t j = 0; j < size;) {
+  size_t iter = 3;
+  char ch = encoded[0] << iter;
+  for (size_t j = iter; j < size;) {
     const Node* nd = &this->tree.back();
     while (nd->str == 0) {
       if (ch & (1 << (CHAR_SIZE - 1))) {
