@@ -57,18 +57,10 @@ size_t Tree::add_node(const Node& nd) {
   this->at(nd.child_l).parent = position;
   this->at(nd.child_r).is_left_child = false;
   this->at(nd.child_r).parent = position;
-  this->char_to_index.insert({nd.str, position});
   return position;
 }
 
-std::vector<bool> Tree::find_way(char ch) const {
-  const auto iter = this->char_to_index.find(ch);
-  size_t pos = 0;
-  if (iter != this->char_to_index.end()) {
-    pos = iter->second;
-  } else {
-    return {};  // TODO
-  }
+std::vector<bool> Tree::find_way(size_t pos) const {
   std::vector<bool> vec;
   while (this->at(pos).parent < this->size()) {
     vec.push_back(this->at(pos).is_left_child);

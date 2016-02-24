@@ -24,7 +24,5 @@ public:
 class Tree : public std::vector<Node> {
 public:
   size_t add_node(const Node&);
-  std::vector<bool> find_way(char) const;
-protected:
-  std::unordered_map<char, size_t> char_to_index;
+  std::vector<bool> find_way(size_t) const;
 };

@@ -12,12 +12,13 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
   char code = 0;
   size_t i = log_char_size;
   for (const auto& ch : raw) {
-    const auto& code_it = this->table.find(ch);
+    const auto code_it = this->table.find(ch);
     if (code_it == this->table.end()) {
       std::cerr << "FUCK THIS SHIT: " << ch << std::endl;  // TODO
       continue;
     }
-    for (const auto& bit : code_it->second) {
+    const auto vec = &code_it->second;
+    for (const auto& bit : *vec) {
       if (i == CHAR_SIZE) {
         encoded.push_back(code);
         code = 0;
@@ -36,7 +37,7 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
     ((1 << log_char_size) - 1)) + 1;
   const size_t size = (encoded.size() - 1) * CHAR_SIZE + rest;
   size_t index = 0;
-  size_t iter = 3;
+  size_t iter = log_char_size;
   char ch = encoded[0] << iter;
   for (size_t j = iter; j < size;) {
     const Node* nd = &this->tree.back();
@@ -134,8 +135,7 @@ void HuffmanCodec::build_tree(Heap& heap) {
 
 void HuffmanCodec::build_table() {
   for (size_t i = 0; i < (this->tree.size() + 1) / 2; ++i) {
-    const auto ch = this->tree[i].str;
-    this->table.insert({ch, this->tree.find_way(ch)});
+    this->table.insert({this->tree[i].str, this->tree.find_way(i)});
   }
 }
 
