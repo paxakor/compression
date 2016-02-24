@@ -1,5 +1,4 @@
 #include <ctime>
-#include <fstream>
 #include <iostream>
 #include "huffman/huffman.h"
 #include "tester/config.h"

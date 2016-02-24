@@ -1,13 +1,16 @@
 #include <iostream>  // for debug
+#include <cmath>
 #include "common/defs.h"
 #include "common/utils.h"
 #include "huffman/huffman.h"
 
 namespace Codecs {
 
+const size_t log_char_size = ceil(log2(CHAR_SIZE));
+
 void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
   char code = 0;
-  size_t i = 3;  // Here I hope, that CHAR_SIZE == 8. TODO
+  size_t i = log_char_size;
   for (const auto& ch : raw) {
     const auto& code_it = this->table.find(ch);
     if (code_it == this->table.end()) {
@@ -25,11 +28,12 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
     }
   }
   encoded.push_back(code << (CHAR_SIZE - i));
-  encoded[0] |= static_cast<char>(i - 1) << 5;
+  encoded[0] |= static_cast<char>(i - 1) << (CHAR_SIZE - log_char_size);
 }
 
 void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
-  const size_t rest = ((encoded[0] >> 5) & 7) + 1;
+  const size_t rest = ((encoded[0] >> (CHAR_SIZE - log_char_size)) &
+    ((1 << log_char_size) - 1)) + 1;
   const size_t size = (encoded.size() - 1) * CHAR_SIZE + rest;
   size_t index = 0;
   size_t iter = 3;
@@ -52,7 +56,6 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
     }
     raw.push_back(nd->str);
   }
-  // std::cout << raw << std::endl;
 }
 
 string HuffmanCodec::save() const {
