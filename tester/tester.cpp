@@ -49,7 +49,7 @@ void Tester::set_codec(Codecs::CodecIFace& codec) {
 
 void Tester::test_encode() {
   std::cout << "Start encoding" << std::endl;
-  auto start = 1.0 * clock();
+  double start = clock();
   for (const auto& record : this->data) {
     string out;
     this->codec->encode(out, record);
@@ -61,7 +61,7 @@ void Tester::test_encode() {
 
 void Tester::test_decode() {
   std::cout << "Start decoding" << std::endl;
-  auto start = 1.0 * clock();
+  double start = clock();
   for (const auto& record : this->encoded) {
     std::string out;
     this->codec->decode(out, record);

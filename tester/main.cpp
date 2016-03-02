@@ -17,8 +17,8 @@ int main () {
   tester.learn_codec();
   tester.test_encode();
   tester.test_decode();
-  tester.test_size();
-  tester.test_correctness();
+  // tester.test_size();
+  // tester.test_correctness();
 
   huffman.reset();
   std::cout << "Program ended in " << time(nullptr) - start <<
