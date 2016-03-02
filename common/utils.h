@@ -1,11 +1,26 @@
 #pragma once
 
+#include <climits>
 #include <cstddef>
 #include <string>
 #include <vector>
 
 using std::string;
 using std::vector;
+
+template <typename Int>
+string print_number_binary(Int number) {
+  string res;
+  const size_t sz = sizeof(number) * CHAR_BIT;
+  for (size_t i = 0; i < sz; ++i) {
+    if (number & (static_cast<Int>(1) << (sz - i - 1))) {
+      res.push_back('1');
+    } else {
+      res.push_back('0');
+    }
+  }
+  return res;
+}
 
 template <typename Int>
 string save_int(Int number) {

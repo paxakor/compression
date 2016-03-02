@@ -1,5 +1,6 @@
 #include <ctime>
 #include <iostream>
+#include "common/utils.h"
 #include "huffman/huffman.h"
 #include "tester/config.h"
 #include "tester/tester.h"

@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include "tester/tester.h"
+#include "common/utils.h"
 
 template <typename Container, typename Iter>
 void select_sample(Container& cont, Iter begin, Iter end, size_t sample_size) {
@@ -12,7 +13,7 @@ void select_sample(Container& cont, Iter begin, Iter end, size_t sample_size) {
 
 void Tester::learn_codec() {
   std::cout << "Learning" << std::endl;
-  auto start = 1.0 * clock();
+  double start = clock();
   vector<std::experimental::string_view> sample;
   select_sample(sample, this->data.begin(), this->data.end(),
     this->codec->sample_size(this->data.size()));
@@ -35,11 +36,11 @@ void Tester::read_data(const string& data_file) {
 }
 
 void Tester::save_encoded(const string& output_file) const {
-  std::ofstream output(output_file);
+  std::ofstream output(output_file, std::ios::binary);
   for (const auto& record : this->encoded) {
     output << record << std::endl;
   }
-  output.clear();
+  output.close();
 }
 
 void Tester::set_codec(Codecs::CodecIFace& codec) {
@@ -100,7 +101,7 @@ void Tester::test_size() const {
 }
 
 size_t print_size(const vector<string>& vec, const string& name) {
-  size_t sz = 1;
+  size_t sz = 0;
   for (const auto& s : vec) {
     sz += s.size() + 1;
   }

@@ -1,5 +1,5 @@
-#include <iostream>  // for debug
 #include <cmath>
+#include <algorithm>
 #include "common/defs.h"
 #include "common/utils.h"
 #include "huffman/huffman.h"
@@ -10,31 +10,42 @@ const size_t log_char_size = ceil(log2(CHAR_SIZE));
 
 void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
   char code = 0;
-  size_t i = log_char_size;
+  size_t iter = log_char_size;
   for (const auto& ch : raw) {
     const auto code_it = this->table.find(ch);
-    if (code_it == this->table.end()) {
-      std::cerr << "FUCK THIS SHIT: " << ch << std::endl;  // TODO
-      continue;
-    }
-    const auto vec = &code_it->second;
-    for (const auto& bit : *vec) {
-      if (i == CHAR_SIZE) {
-        encoded.push_back(code);
-        code = 0;
-        i = 0;
+    if (code_it == this->table.end() || ch == this->rare_char) {
+      const auto& char_code = this->table.find(this->rare_char)->second;
+      for (const auto& bit : char_code) {
+        code = (code << 1) + bit;
+        ++iter;
+        if (iter == CHAR_SIZE) {
+          encoded.push_back(code);
+          code = 0;
+          iter = 0;
+        }
       }
-      code = (code << 1) + bit;
-      ++i;
+      code = (code << (CHAR_SIZE - iter)) | (ch >> iter);
+      encoded.push_back(code);
+      code = ch;
+    } else {
+      for (const auto& bit : code_it->second) {
+        code = (code << 1) + bit;
+        ++iter;
+        if (iter == CHAR_SIZE) {
+          encoded.push_back(code);
+          code = 0;
+          iter = 0;
+        }
+      }
     }
   }
-  encoded.push_back(code << (CHAR_SIZE - i));
-  encoded[0] |= static_cast<char>(i - 1) << (CHAR_SIZE - log_char_size);
+  encoded.push_back(code << (CHAR_SIZE - iter));
+  encoded[0] |= static_cast<char>(iter) << (CHAR_SIZE - log_char_size);
 }
 
 void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
   const size_t rest = ((encoded[0] >> (CHAR_SIZE - log_char_size)) &
-    ((1 << log_char_size) - 1)) + 1;
+    ((1 << log_char_size) - 1));
   const size_t size = (encoded.size() - 1) * CHAR_SIZE + rest;
   size_t index = 0;
   size_t iter = log_char_size;
@@ -55,7 +66,17 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
         iter = 0;
       }
     }
-    raw.push_back(nd->str);
+    if (nd->str == this->rare_char) {
+      char tmp_ch = ch;
+      j += CHAR_SIZE;
+      ch = encoded[++index];
+      tmp_ch = tmp_ch | ((ch >> (CHAR_SIZE - iter)) &
+        ((static_cast<char>(1) << iter) - 1));
+      ch = ch << iter;
+      raw.push_back(tmp_ch);
+    } else {
+      raw.push_back(nd->str);
+    }
   }
 }
 
@@ -91,7 +112,9 @@ void HuffmanCodec::load(const string_view& config) {
 }
 
 size_t HuffmanCodec::sample_size(size_t records_total) const {
-  return records_total * 1;
+  const size_t min_size = 1;
+  const double k = 0.05;
+  return std::max(min_size, static_cast<size_t>(records_total * k));
 }
 
 void HuffmanCodec::learn(const vector<string_view>& all_samples) {
@@ -112,6 +135,18 @@ Heap HuffmanCodec::precalc(const vector<string_view>& all_samples) {
       }
     }
   }
+
+  // find rare_char
+  char ch = CHAR_MIN;
+  do {
+    if (frequency.count(ch) == 0 && ch != 0) {
+      this->rare_char = ch;
+      frequency.insert({ch, 0});
+      break;
+    }
+    ++ch;
+  } while (ch != CHAR_MAX);
+
   Heap heap;
   for (const auto& ch : frequency) {
     Node nd(ch.first);
