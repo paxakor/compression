@@ -17,10 +17,12 @@ int main () {
   tester.learn_codec();
   tester.test_encode();
   tester.test_decode();
-  // tester.test_size();
-  // tester.test_correctness();
 
-  huffman.reset();
+#ifdef TESTER_RUN
+  tester.test_size();
+  tester.test_correctness();
+#endif
+
   std::cout << "Program ended in " << time(nullptr) - start <<
     " seconds" << std::endl;
   return 0;
