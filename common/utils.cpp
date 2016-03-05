@@ -28,7 +28,7 @@ vector<string> split(const string& str, size_t count, char ch) {
 
 string bools_to_string(const vector<bool>& bools, size_t mv) {
   string str(1, 0);
-  size_t iter = mv;
+  size_t iter = mv;  // iter shows how many bits are already filled
   char code = 0;
   for (const auto& bit : bools) {
     code = (code << 1) + bit;
@@ -38,24 +38,12 @@ string bools_to_string(const vector<bool>& bools, size_t mv) {
       iter = 0;
     }
   }
-  str.push_back(code << (CHAR_SIZE - iter));
-  str[0] = static_cast<char>(iter);
-  return str;
-}
-
-string bools_to_string_old(const vector<bool>& bools) {
-  string str(1, 0);
-  size_t i = 0;
-  auto iter = bools.begin();
-  while (iter != bools.end()) {
-    char code = 0;
-    for (i = 0; i < CHAR_SIZE && iter != bools.end(); ++i, ++iter) {
-      code = (code << 1) + *iter;
-    }
-    code = code << (CHAR_SIZE - i);
-    str.push_back(code);
+  if (iter == 0) {
+    str[0] = static_cast<char>(0);
+  } else {
+    str.push_back(code << (CHAR_SIZE - iter));
+    str[0] = static_cast<char>(iter);
   }
-  str[0] = static_cast<char>(CHAR_SIZE - i);
   return str;
 }
 

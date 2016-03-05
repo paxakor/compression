@@ -13,18 +13,49 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
   char code = 0;
   size_t mv = log_char_size;  // mv shows how many bits are already filled
   for (const auto& ch : raw) {
-    const auto& code_str = this->table.find(ch)->second[mv];
-    // guaranteed: code_str.size() >= 2
-    const size_t last = code_str.size() - 1;
-    code = code | code_str[1];
-    if (last != 1) {
-      encoded.push_back(code);
-      for (size_t iter = 2; iter < last; ++iter) {
-        encoded.push_back(code_str[iter]);
+    const auto code_it = this->table.find(ch);
+    if (code_it == this->table.end() || ch == this->rare_char) {
+      const auto& code_str = this->table.find(this->rare_char)->second[mv];
+//-------------
+      mv = code_str[0];
+      // guaranteed: code_str.size() >= 2
+      const size_t last = code_str.size() - 1;
+      code = code | code_str[1];
+      if (last != 1) {
+        encoded.push_back(code);
+        for (size_t iter = 2; iter < last; ++iter) {
+          encoded.push_back(code_str[iter]);
+        }
+        code = code_str[last];
       }
-      code = code_str[last];
+      if (mv == 0) {
+        encoded.push_back(code);
+        code = 0;
+      }
+//-------------
+      code = code | (ch >> mv);
+      encoded.push_back(code);
+      code = ch << (CHAR_SIZE - mv);
+    } else {
+      const auto& code_str = code_it->second[mv];
+//-------------
+      mv = code_str[0];
+      // guaranteed: code_str.size() >= 2
+      const size_t last = code_str.size() - 1;
+      code = code | code_str[1];
+      if (last != 1) {
+        encoded.push_back(code);
+        for (size_t iter = 2; iter < last; ++iter) {
+          encoded.push_back(code_str[iter]);
+        }
+        code = code_str[last];
+      }
+      if (mv == 0) {
+        encoded.push_back(code);
+        code = 0;
+      }
+//-------------
     }
-    mv = code_str[0];
   }
   encoded.push_back(code);
   encoded[0] |= static_cast<char>(mv) << (CHAR_SIZE - log_char_size);
@@ -77,9 +108,8 @@ void HuffmanCodec::load(const string_view& config) {
 
 size_t HuffmanCodec::sample_size(size_t records_total) const {
   const size_t min_size = 1;
-  const double k = 0.05;
-  // return std::max(min_size, static_cast<size_t>(records_total * k));
-  return records_total;
+  const size_t n = ceil(pow(log2(records_total), 2));  // don't know why
+  return std::max(min_size, n);
 }
 
 void HuffmanCodec::learn(const vector<string_view>& all_samples) {
