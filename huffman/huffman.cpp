@@ -1,3 +1,4 @@
+#include <iostream>  // for debug
 #include <cmath>
 #include <algorithm>
 #include "common/defs.h"
@@ -10,37 +11,23 @@ const size_t log_char_size = ceil(log2(CHAR_SIZE));
 
 void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
   char code = 0;
-  size_t iter = log_char_size;
+  size_t mv = log_char_size;  // mv shows how many bits are already filled
   for (const auto& ch : raw) {
-    const auto code_it = this->table.find(ch);
-    if (code_it == this->table.end() || ch == this->rare_char) {
-      const auto& char_code = this->table.find(this->rare_char)->second;
-      for (const auto& bit : char_code) {
-        code = (code << 1) + bit;
-        ++iter;
-        if (iter == CHAR_SIZE) {
-          encoded.push_back(code);
-          code = 0;
-          iter = 0;
-        }
-      }
-      code = (code << (CHAR_SIZE - iter)) | (ch >> iter);
+    const auto& code_str = this->table.find(ch)->second[mv];
+    // guaranteed: code_str.size() >= 2
+    const size_t last = code_str.size() - 1;
+    code = code | code_str[1];
+    if (last != 1) {
       encoded.push_back(code);
-      code = ch;
-    } else {
-      for (const auto& bit : code_it->second) {
-        code = (code << 1) + bit;
-        ++iter;
-        if (iter == CHAR_SIZE) {
-          encoded.push_back(code);
-          code = 0;
-          iter = 0;
-        }
+      for (size_t iter = 2; iter < last; ++iter) {
+        encoded.push_back(code_str[iter]);
       }
+      code = code_str[last];
     }
+    mv = code_str[0];
   }
-  encoded.push_back(code << (CHAR_SIZE - iter));
-  encoded[0] |= static_cast<char>(iter) << (CHAR_SIZE - log_char_size);
+  encoded.push_back(code);
+  encoded[0] |= static_cast<char>(mv) << (CHAR_SIZE - log_char_size);
 }
 
 void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
@@ -82,39 +69,17 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
 
 string HuffmanCodec::save() const {
   string res;
-  res += save_int(this->tree.size());
-  for (const auto& nd : this->tree) {
-    res += nd.save();
-  }
-  res += save_int(this->table.size());
-  for (const auto& ch : this->table) {
-    res += ch.first;
-    res += save_bools(ch.second);
-  }
   return res;
 }
 
 void HuffmanCodec::load(const string_view& config) {
-  string config_str = config.to_string();
-  string::iterator iter = config_str.begin();
-  const string::iterator end = config_str.end();
-  const size_t tree_sz = load_int(iter, end);
-  this->tree.resize(tree_sz);
-  for (size_t i = 0; i < tree_sz; ++i) {
-    this->tree.push_back(Node(iter, end));
-  }
-  const size_t table_sz = load_int(iter, end);
-  for (size_t i = 0; i < table_sz; ++i) {
-    char ch = *(iter++);
-    auto vec = load_bools(iter, end);
-    this->table.insert({ch, vec});
-  }
 }
 
 size_t HuffmanCodec::sample_size(size_t records_total) const {
   const size_t min_size = 1;
   const double k = 0.05;
-  return std::max(min_size, static_cast<size_t>(records_total * k));
+  // return std::max(min_size, static_cast<size_t>(records_total * k));
+  return records_total;
 }
 
 void HuffmanCodec::learn(const vector<string_view>& all_samples) {
@@ -170,7 +135,11 @@ void HuffmanCodec::build_tree(Heap& heap) {
 
 void HuffmanCodec::build_table() {
   for (size_t i = 0; i < (this->tree.size() + 1) / 2; ++i) {
-    this->table.insert({this->tree[i].str, this->tree.find_way(i)});
+    vector<string> codes(CHAR_SIZE);
+    for (size_t j = 0; j < CHAR_SIZE; ++j) {
+      codes[j] = bools_to_string(this->tree.find_way(i), j);
+    }
+    this->table.insert({this->tree[i].str, codes});
   }
 }
 

@@ -1,52 +1,6 @@
+#include <algorithm>
 #include "common/defs.h"
 #include "common/utils.h"
-
-string save_bools(const vector<bool>& vec) {
-  string res;
-  auto iter = vec.begin();
-  const auto end = vec.end();
-  const size_t sz = vec.size() / CHAR_SIZE;
-  res += static_cast<char>(sz - 1);
-  res += static_cast<char>(vec.size() - (sz * CHAR_SIZE));
-  for (size_t i = 0; i < sz; ++i) {
-    char c = 0;
-    for (size_t j = 0; j < CHAR_SIZE; ++j) {
-      bool b = (iter != end) ? *(iter++) : 0;
-      c = (c << 1) + b;
-    }
-    res += c;
-  }
-  return res;
-}
-
-size_t load_int(string::iterator& iter, const string::iterator& end) {
-  const size_t sz = (iter != end) ? *(iter++) : 0;
-  const size_t mod = (static_cast<size_t>(1) << CHAR_SIZE);
-  size_t res = 0;
-  for (size_t i = 0; i < sz && iter != end; ++i) {
-    res = (res << mod) + *(iter++);
-  }
-  return res;
-}
-
-vector<bool> load_bools(string::iterator& iter, const string::iterator& end) {
-  vector<bool> vec;
-  const size_t sz = (iter != end) ? *(iter++) : 0;
-  const size_t rest = (iter != end) ? *(iter++) : 0;
-  for (size_t i = 0; i < sz && iter != end; ++i) {
-    char c = *(iter++);
-    for (size_t j = 0; j < CHAR_SIZE; ++j) {
-      vec.push_back(c & 0x80);
-      c = c << 1;
-    }
-  }
-  char c = (iter != end) ? *(iter++) : 0;
-  for (size_t j = 0; j < rest; ++j) {
-    vec.push_back(c & 0x80);
-    c = c << 1;
-  }
-  return vec;
-}
 
 vector<string> split(const string& str, size_t count, char ch) {
   size_t pos = 0;
@@ -54,7 +8,7 @@ vector<string> split(const string& str, size_t count, char ch) {
   vector<string> res;
   while (pos < str.size() && (count == 0 || cnt < count - 1)) {
     size_t len = 0;
-    while (str[pos + len] == ch) {
+    while ((pos + len) < str.size() && str[pos + len] == ch) {
       ++pos;
     }
     while ((pos + len) < str.size() && str[pos + len] != ch) {
@@ -70,4 +24,46 @@ vector<string> split(const string& str, size_t count, char ch) {
     res.push_back(str.substr(pos, str.size() - pos));
   }
   return res;
+}
+
+string bools_to_string(const vector<bool>& bools, size_t mv) {
+  string str(1, 0);
+  size_t iter = mv;
+  char code = 0;
+  for (const auto& bit : bools) {
+    code = (code << 1) + bit;
+    if (++iter == CHAR_SIZE) {
+      str.push_back(code);
+      code = 0;
+      iter = 0;
+    }
+  }
+  str.push_back(code << (CHAR_SIZE - iter));
+  str[0] = static_cast<char>(iter);
+  return str;
+}
+
+string bools_to_string_old(const vector<bool>& bools) {
+  string str(1, 0);
+  size_t i = 0;
+  auto iter = bools.begin();
+  while (iter != bools.end()) {
+    char code = 0;
+    for (i = 0; i < CHAR_SIZE && iter != bools.end(); ++i, ++iter) {
+      code = (code << 1) + *iter;
+    }
+    code = code << (CHAR_SIZE - i);
+    str.push_back(code);
+  }
+  str[0] = static_cast<char>(CHAR_SIZE - i);
+  return str;
+}
+
+string print_string_binary(const string& str) {
+  string result;
+  for (const auto& ch : str) {
+    result += print_number_binary(ch) + " ";
+  }
+  result.erase(result.size() - 1, 1);
+  return result;
 }

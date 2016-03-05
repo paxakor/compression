@@ -28,7 +28,7 @@ protected:
   void build_table();
 
   Tree tree;
-  std::unordered_map< char, vector<bool> > table;
+  std::unordered_map< char, vector<string> > table;
   char rare_char;
 };
 
