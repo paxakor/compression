@@ -16,7 +16,7 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
     const auto code_it = this->table.find(ch);
     if (code_it == this->table.end() || ch == this->rare_char) {
       const auto& code_str = this->table.find(this->rare_char)->second[mv];
-//-------------
+      //-------------
       mv = code_str[0];
       // guaranteed: code_str.size() >= 2
       const size_t last = code_str.size() - 1;
@@ -32,13 +32,13 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
         encoded.push_back(code);
         code = 0;
       }
-//-------------
+      //-------------
       code = code | (ch >> mv);
       encoded.push_back(code);
       code = ch << (CHAR_SIZE - mv);
     } else {
       const auto& code_str = code_it->second[mv];
-//-------------
+      //-------------
       mv = code_str[0];
       // guaranteed: code_str.size() >= 2
       const size_t last = code_str.size() - 1;
@@ -54,7 +54,7 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
         encoded.push_back(code);
         code = 0;
       }
-//-------------
+      //-------------
     }
   }
   encoded.push_back(code);
@@ -65,10 +65,10 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
   const size_t rest = ((encoded[0] >> (CHAR_SIZE - log_char_size)) &
     ((1 << log_char_size) - 1));
   const size_t size = (encoded.size() - 1) * CHAR_SIZE + rest;
-  size_t index = 0;
+  auto index = encoded.begin();
   size_t iter = log_char_size;
-  char ch = encoded[0] << iter;
-  for (size_t j = iter; j < size;) {
+  char ch = *index << iter;
+  for (size_t j = iter; j != size;) {
     const Node* nd = &this->tree.back();
     while (nd->str == 0) {
       if (ch & (1 << (CHAR_SIZE - 1))) {
@@ -80,14 +80,14 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
       ++j;
       ch = ch << 1;
       if (iter == CHAR_SIZE) {
-        ch = encoded[++index];
+        ch = *(++index);
         iter = 0;
       }
     }
     if (nd->str == this->rare_char) {
       char tmp_ch = ch;
       j += CHAR_SIZE;
-      ch = encoded[++index];
+      ch = *(++index);
       tmp_ch = tmp_ch | ((ch >> (CHAR_SIZE - iter)) &
         ((static_cast<char>(1) << iter) - 1));
       ch = ch << iter;

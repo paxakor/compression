@@ -49,11 +49,12 @@ void Tester::set_codec(Codecs::CodecIFace& codec) {
 
 void Tester::test_encode() {
   std::cout << "Start encoding" << std::endl;
+  this->encoded.resize(this->data.size());
+  auto iter = this->encoded.begin();
   double start = clock();
   for (const auto& record : this->data) {
-    string out;
-    this->codec->encode(out, record);
-    this->encoded.push_back(out);
+    this->codec->encode(*iter, record);
+    ++iter;
   }
   std::cout << "Encoding ended in " << (clock() - start) / CLOCKS_PER_SEC <<
     " seconds" << std::endl;
@@ -61,11 +62,12 @@ void Tester::test_encode() {
 
 void Tester::test_decode() {
   std::cout << "Start decoding" << std::endl;
+  this->decoded.resize(this->data.size());
+  auto iter = this->decoded.begin();
   double start = clock();
   for (const auto& record : this->encoded) {
-    std::string out;
-    this->codec->decode(out, record);
-    this->decoded.push_back(out);
+    this->codec->decode(*iter, record);
+    ++iter;
   }
   std::cout << "Decoding ended in " << (clock() - start) / CLOCKS_PER_SEC <<
     " seconds" << std::endl;
@@ -104,6 +106,7 @@ size_t print_size(const vector<string>& vec, const string& name) {
   for (const auto& s : vec) {
     sz += s.size() + 1;
   }
+  sz *= sizeof(char);
   const size_t bytes = sz;
   const size_t mod = 1024;
   const vector<string> unit_name = {"B", "KiB", "MiB", "GiB", "TiB", "PiB",
