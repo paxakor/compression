@@ -7,6 +7,8 @@ Node::Node()
   , parent(0)
   , child_l(0)
   , child_r(0)
+  , child_l_ptr(nullptr)
+  , child_r_ptr(nullptr)
   , str(0)
 {}
 
@@ -15,6 +17,8 @@ Node::Node(char s)
   , parent(0)
   , child_l(0)
   , child_r(0)
+  , child_l_ptr(nullptr)
+  , child_r_ptr(nullptr)
   , str(s)
 {}
 
@@ -23,6 +27,8 @@ Node::Node(size_t l, size_t r)
   , parent(0)
   , child_l(l)
   , child_r(r)
+  , child_l_ptr(nullptr)
+  , child_r_ptr(nullptr)
   , str(0)
 {}
 
@@ -31,24 +37,10 @@ Node::Node(const Node& nd)
   , parent(nd.parent)
   , child_l(nd.child_l)
   , child_r(nd.child_r)
+  , child_l_ptr(nd.child_l_ptr)
+  , child_r_ptr(nd.child_r_ptr)
   , str(nd.str)
 {}
-
-Node::Node(std::string::iterator& iter, const std::string::iterator& end) {
-  this->is_left_child = load_int(iter, end);
-  this->parent = load_int(iter, end);
-  this->child_l = load_int(iter, end);
-  this->child_r = load_int(iter, end);
-}
-
-std::string Node::save() const {
-  std::string res;
-  res += save_int(this->is_left_child);
-  res += save_int(this->parent);
-  res += save_int(this->child_l);
-  res += save_int(this->child_r);
-  return res;
-}
 
 size_t Tree::add_node(const Node& nd) {
   size_t position = this->size();

@@ -69,12 +69,12 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
   size_t iter = log_char_size;
   char ch = *index << iter;
   for (size_t j = iter; j != size;) {
-    const Node* nd = &this->tree.back();
+    Node const* nd = &this->tree.back();
     while (nd->str == 0) {
       if (ch & (1 << (CHAR_SIZE - 1))) {
-        nd = &this->tree[nd->child_l];
+        nd = nd->child_l_ptr;
       } else {
-        nd = &this->tree[nd->child_r];
+        nd = nd->child_r_ptr;
       }
       ++iter;
       ++j;
@@ -161,6 +161,10 @@ void HuffmanCodec::build_tree(Heap& heap) {
     this->tree.add_node(Node(a.second, b.second));
   }
   this->tree.back().parent = this->tree.size();
+  for (auto& nd : this->tree) {
+    nd.child_l_ptr = &this->tree[nd.child_l];
+    nd.child_r_ptr = &this->tree[nd.child_r];
+  }
 }
 
 void HuffmanCodec::build_table() {
