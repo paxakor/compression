@@ -1,6 +1,5 @@
 #pragma once
 
-#include <unordered_map>
 #include <queue>
 #include "codec/codec.h"
 #include "huffman/tree.h"
@@ -28,7 +27,7 @@ protected:
   void build_table();
 
   Tree tree;
-  std::unordered_map< char, vector<string> > table;
+  vector<string>* table;
 };
 
 }  // namespace Codecs

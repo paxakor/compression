@@ -1,4 +1,3 @@
-#include <iostream>  // for debug
 #include <cmath>
 #include <algorithm>
 #include "common/defs.h"
@@ -14,8 +13,7 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
   // mv shows how many bits are already filled
   size_t mv = log_char_size;
   for (const auto& ch : raw) {
-    const auto code_it = this->table.find(ch);
-    const auto& code_str = code_it->second[mv];
+    const auto& code_str = this->table[static_cast<unsigned char>(ch)][mv];
     mv = code_str[0];
     // guaranteed: code_str.size() >= 2
     const size_t last = code_str.size() - 1;
@@ -129,18 +127,20 @@ void HuffmanCodec::build_tree(Heap& heap) {
 }
 
 void HuffmanCodec::build_table() {
+  this->table = new vector<string>[static_cast<size_t>(UCHAR_MAX) + 1];
   for (size_t i = 0; i < (this->tree.size() + 1) / 2; ++i) {
     vector<string> codes(CHAR_SIZE);
     for (size_t j = 0; j < CHAR_SIZE; ++j) {
       codes[j] = bools_to_string(this->tree.find_way(i), j);
     }
-    this->table.insert({this->tree[i].str, codes});
+    this->table[static_cast<unsigned char>(this->tree[i].str)] = codes;
   }
 }
 
 void HuffmanCodec::reset() {
   this->tree.clear();
-  this->table.clear();
+  delete[] this->table;
+  this->table = nullptr;
 }
 
 }  // namespace Codecs
