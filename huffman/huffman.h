@@ -27,7 +27,7 @@ protected:
   void build_table();
 
   Tree tree;
-  vector<string>* table;
+  string** table;
 };
 
 }  // namespace Codecs

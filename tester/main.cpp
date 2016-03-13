@@ -21,6 +21,7 @@ int main () {
 #ifdef TESTER_RUN
   tester.test_size();
   tester.test_correctness();
+  huffman.reset();
 #endif
 
   std::cout << "Program ended in " << time(nullptr) - start <<
