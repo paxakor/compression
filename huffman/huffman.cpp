@@ -70,7 +70,7 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
   char ch = *index << iter;
   for (size_t j = iter; j != size;) {
     Node const* nd = &this->tree.back();
-    while (nd->str == 0) {
+    while (!nd->leaf) {
       if (ch & (1 << (CHAR_SIZE - 1))) {
         nd = nd->child_l_ptr;
       } else {

@@ -21,6 +21,7 @@ public:
   Node* child_l_ptr;
   Node* child_r_ptr;
   char str;
+  bool leaf;
 };
 
 class Tree : public std::vector<Node> {

@@ -5,9 +5,9 @@
 #include "tester/tester.h"
 #include "common/utils.h"
 
-template <typename Container, typename Iter>
-void select_sample(Container& cont, Iter begin, Iter end, size_t sample_size) {
-  std::experimental::sample(begin, end, std::back_inserter(cont),
+template <typename Container, typename Source>
+void select_sample(Container& cont, const Source& src, size_t sample_size) {
+  std::experimental::sample(src.begin(), src.end(), std::back_inserter(cont),
     sample_size, std::mt19937(std::random_device()()));
 }
 
@@ -15,9 +15,8 @@ void Tester::learn_codec() {
   std::cout << "Learning" << std::endl;
   double start = clock();
   vector<std::experimental::string_view> sample;
-  select_sample(sample, this->data.begin(), this->data.end(),
-    this->codec->sample_size(this->data.size()));
-  std::cout << "Sample selected" << std::endl;
+  const size_t smpl_sz = this->codec->sample_size(this->data.size());
+  select_sample(sample, this->data, smpl_sz);
   this->codec->learn(sample);
   std::cout << "Learning ended in " << (clock() - start) / CLOCKS_PER_SEC <<
     " seconds" << std::endl;
@@ -25,7 +24,7 @@ void Tester::learn_codec() {
 
 void Tester::read_data(const string& data_file) {
   std::cout << "Reading data from " << data_file << std::endl;
-  std::ifstream input(data_file);
+  std::ifstream input(data_file, std::ios::binary);
   while (input.good()) {
     string record;
     std::getline(input, record);

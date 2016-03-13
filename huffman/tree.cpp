@@ -10,6 +10,7 @@ Node::Node()
   , child_l_ptr(nullptr)
   , child_r_ptr(nullptr)
   , str(0)
+  , leaf(false)
 {}
 
 Node::Node(char s)
@@ -20,6 +21,7 @@ Node::Node(char s)
   , child_l_ptr(nullptr)
   , child_r_ptr(nullptr)
   , str(s)
+  , leaf(true)
 {}
 
 Node::Node(size_t l, size_t r)
@@ -30,6 +32,7 @@ Node::Node(size_t l, size_t r)
   , child_l_ptr(nullptr)
   , child_r_ptr(nullptr)
   , str(0)
+  , leaf(false)
 {}
 
 Node::Node(const Node& nd)
@@ -40,6 +43,7 @@ Node::Node(const Node& nd)
   , child_l_ptr(nd.child_l_ptr)
   , child_r_ptr(nd.child_r_ptr)
   , str(nd.str)
+  , leaf(nd.leaf)
 {}
 
 size_t Tree::add_node(const Node& nd) {
