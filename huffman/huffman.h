@@ -29,7 +29,6 @@ protected:
 
   Tree tree;
   std::unordered_map< char, vector<string> > table;
-  char rare_char;
 };
 
 }  // namespace Codecs

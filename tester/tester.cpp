@@ -24,7 +24,7 @@ void Tester::learn_codec() {
 
 void Tester::read_data(const string& data_file) {
   std::cout << "Reading data from " << data_file << std::endl;
-  std::ifstream input(data_file, std::ios::binary);
+  std::ifstream input(data_file);
   while (input.good()) {
     string record;
     std::getline(input, record);
