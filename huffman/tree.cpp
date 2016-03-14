@@ -9,7 +9,7 @@ Node::Node()
   , child_r(0)
   , child_l_ptr(nullptr)
   , child_r_ptr(nullptr)
-  , str(0)
+  , sym(0)
   , leaf(false)
 {}
 
@@ -20,7 +20,7 @@ Node::Node(char s)
   , child_r(0)
   , child_l_ptr(nullptr)
   , child_r_ptr(nullptr)
-  , str(s)
+  , sym(s)
   , leaf(true)
 {}
 
@@ -31,7 +31,7 @@ Node::Node(size_t l, size_t r)
   , child_r(r)
   , child_l_ptr(nullptr)
   , child_r_ptr(nullptr)
-  , str(0)
+  , sym(0)
   , leaf(false)
 {}
 
@@ -42,7 +42,7 @@ Node::Node(const Node& nd)
   , child_r(nd.child_r)
   , child_l_ptr(nd.child_l_ptr)
   , child_r_ptr(nd.child_r_ptr)
-  , str(nd.str)
+  , sym(nd.sym)
   , leaf(nd.leaf)
 {}
 

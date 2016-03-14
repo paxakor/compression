@@ -20,7 +20,7 @@ public:
   size_t child_r;
   Node* child_l_ptr;
   Node* child_r_ptr;
-  char str;
+  char sym;
   bool leaf;
 };
 

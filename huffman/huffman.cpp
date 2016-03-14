@@ -57,7 +57,7 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
         iter = 0;
       }
     }
-    raw.push_back(nd->str);
+    raw.push_back(nd->sym);
   }
 }
 
@@ -127,21 +127,22 @@ void HuffmanCodec::build_tree(Heap& heap) {
 }
 
 void HuffmanCodec::build_table() {
-  this->table = new string* [static_cast<size_t>(UCHAR_MAX) + 1];
+  size_t my256 = static_cast<size_t>(UCHAR_MAX) + 1;
+  this->table = new string* [my256];
   for (size_t i = 0; i < (this->tree.size() + 1) / 2; ++i) {
     string* codes = new string[CHAR_SIZE];
     for (size_t j = 0; j < CHAR_SIZE; ++j) {
       codes[j] = bools_to_string(this->tree.find_way(i), j);
     }
-    this->table[static_cast<unsigned char>(this->tree[i].str)] = codes;
+    this->table[static_cast<unsigned char>(this->tree[i].sym)] = codes;
   }
 }
 
 void HuffmanCodec::reset() {
   this->tree.clear();
 
-  size_t n = static_cast<size_t>(UCHAR_MAX) + 1;
-  for (size_t i = 0; i < n; ++i) {
+  size_t my256 = static_cast<size_t>(UCHAR_MAX) + 1;
+  for (size_t i = 0; i < my256; ++i) {
     delete[] this->table[i];
   }
   delete[] this->table;
