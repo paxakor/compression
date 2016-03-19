@@ -34,7 +34,7 @@ else()
 
     add_executable(tester_run ${SOURCES})
     set_target_properties(tester_run PROPERTIES COMPILE_FLAGS "-Ofast \
-        -DTESTER_RUN -march=native -flto")
+        -DTESTER_RUN -march=native -flto -ggdb")
 
     add_executable(tester_dbg ${SOURCES})
     set_target_properties(tester_dbg PROPERTIES LINK_FLAGS "-pg")

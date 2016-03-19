@@ -50,8 +50,8 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
     const Node* const tree_ptr = &this->tree.front();
     while (!tree_ptr[pos].leaf) {
       const auto pair = this->tree_table[ch][pos - (my256 - 1)];
-      const size_t wasted = pair >> (2 * CHAR_SIZE);
-      pos = pair;
+      const size_t wasted = pair.first;
+      pos = pair.second;
       j -= wasted;
       ch <<= wasted;
       ch ^= (next_ch >> (CHAR_SIZE - wasted));
@@ -142,11 +142,11 @@ void HuffmanCodec::build_table() {
 }
 
 void HuffmanCodec::find_all_ways(){
-  this->tree_table = new size_t* [my256];
+  this->tree_table = new std::pair<uint8_t, uint16_t>*[my256];
   uint8_t ch = 0;
   do {
     uint8_t pos = 0;
-    this->tree_table[ch] = new size_t[my256];
+    this->tree_table[ch] = new std::pair<uint8_t, uint16_t>[my256];
     do {
       this->tree_table[ch][pos] = this->tree.find_way(ch, pos + (my256 - 1));
     } while (++pos != 0);

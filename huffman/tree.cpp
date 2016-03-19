@@ -59,7 +59,7 @@ std::vector<bool> Tree::get_code(size_t pos) const {
   return vec;
 }
 
-size_t Tree::find_way(char ch, size_t pos) const {
+std::pair<uint8_t, uint16_t> Tree::find_way(char ch, size_t pos) const {
   size_t i = CHAR_SIZE;
   while (i != 0 && !this->at(pos).leaf) {
     if (ch & (1 << (CHAR_SIZE - 1))) {
@@ -70,5 +70,5 @@ size_t Tree::find_way(char ch, size_t pos) const {
     ch = ch << 1;
     --i;
   }
-  return ((CHAR_SIZE - i) << (2 * CHAR_SIZE)) | pos;
+  return {CHAR_SIZE - i, pos};
 }

@@ -26,5 +26,5 @@ class Tree : public std::vector<Node> {
 public:
   size_t add_node(const Node&);
   std::vector<bool> get_code(size_t) const;
-  size_t find_way(char, size_t) const;
+  std::pair<uint8_t, uint16_t> find_way(char, size_t) const;
 };

@@ -31,7 +31,7 @@ protected:
 
   Tree tree;
   string** table;
-  size_t** tree_table;
+  std::pair<uint8_t, uint16_t>** tree_table;
 };
 
 }  // namespace Codecs
