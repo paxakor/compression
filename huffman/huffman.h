@@ -8,6 +8,7 @@
 namespace Codecs {
 
 using Pair = std::pair< size_t, size_t >;
+using SmallPair = std::pair<uint8_t, uint16_t>;
 using Heap = std::priority_queue< Pair, vector<Pair>, std::greater<Pair> >;
 
 class HuffmanCodec : public CodecIFace {
@@ -31,7 +32,7 @@ protected:
 
   Tree tree;
   string** table;
-  std::pair<uint8_t, uint16_t>** tree_table;
+  SmallPair** tree_table;
 };
 
 }  // namespace Codecs
