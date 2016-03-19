@@ -19,14 +19,14 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
     // guaranteed: code_str.size() >= 2
     const auto last = code_str.size() - 1;
     code ^= code_str[1];
-    if (last != 1) {
+    if (__builtin_expect(last != 1, true)) {
       encoded.push_back(code);
       for (size_t iter = 2; iter < last; ++iter) {
         encoded.push_back(code_str[iter]);
       }
       code = code_str[last];
     }
-    if (mv == 0) {
+    if (__builtin_expect(mv == 0, false)) {
       encoded.push_back(code);
       code = 0;
     }
@@ -47,14 +47,14 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
   ch ^= (next_ch >> (CHAR_SIZE - iter));
   next_ch <<= iter;
   const size_t last = this->tree.size() - 1;
-  for (ssize_t j = size - iter; j > 0;) {
+  for (size_t j = iter; j < size;) {
     uint16_t pos = last;
     const Node* const tree_ptr = &this->tree.front();
     while (!tree_ptr[pos].leaf) {
       const auto pair = this->tree_table[ch][pos - (my256 - 1)];
       const size_t wasted = pair.first;
       pos = pair.second;
-      j -= wasted;
+      j += wasted;
       ch <<= wasted;
       ch ^= (next_ch >> (CHAR_SIZE - wasted));
       next_ch <<= wasted;
