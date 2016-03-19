@@ -9,6 +9,7 @@ namespace Codecs {
 const size_t log_char_size = ceil(log2(CHAR_SIZE));
 
 void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
+  encoded.reserve(raw.size() * 2);
   char code = 0;
   // mv shows how many bits are already filled
   auto mv = log_char_size;
@@ -35,6 +36,7 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
 }
 
 void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
+  raw.reserve(encoded.size() * 2);
   const size_t rest = ((encoded[0] >> (CHAR_SIZE - log_char_size)) &
     ((1 << log_char_size) - 1));
   const size_t size = (encoded.size() - 1) * CHAR_SIZE + rest;
