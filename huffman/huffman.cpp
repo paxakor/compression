@@ -39,9 +39,9 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
     ((1 << log_char_size) - 1));
   const size_t size = (encoded.size() - 1) * CHAR_SIZE + rest;
   auto index = encoded.begin();
-  size_t iter = log_char_size;
-  char ch = *index << iter;
-  char next_ch = *(++index);
+  auto iter = log_char_size;
+  uint8_t ch = static_cast<uint8_t>(*index) << iter;
+  uint8_t next_ch = static_cast<uint8_t>(*(++index));
   ch = ch | (next_ch >> (CHAR_SIZE - iter));
   next_ch = next_ch << iter;
   const size_t last = this->tree.size() - 1;
@@ -49,9 +49,7 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
     uint16_t pos = last;
     const Node* const tree_ptr = &this->tree.front();
     while (!tree_ptr[pos].leaf) {
-      const uint16_t idx = (static_cast<uint16_t>(ch) << CHAR_SIZE) |
-        static_cast<uint16_t>((pos + 1) - my256);
-      const auto pair = this->tree_table[idx];
+      const auto pair = this->tree_table[ch][pos - (my256 - 1)];
       const size_t wasted = pair >> (2 * CHAR_SIZE);
       pos = pair;
       j -= wasted;
@@ -161,13 +159,15 @@ void HuffmanCodec::build_table() {
 }
 
 void HuffmanCodec::find_all_ways(){
-  this->tree_table = new size_t[static_cast<size_t>(1 << (2 * CHAR_SIZE))];
-  uint16_t num = 0;
+  this->tree_table = new size_t* [my256];
+  uint8_t ch = 0;
   do {
-    char ch = num >> CHAR_SIZE;
-    uint8_t pos = num & ((static_cast<uint16_t>(1) << CHAR_SIZE) - 1);
-    this->tree_table[num] = this->tree.find_way(ch, pos + (my256 - 1));
-  } while (++num != 0);
+    uint8_t pos = 0;
+    this->tree_table[ch] = new size_t[my256];
+    do {
+      this->tree_table[ch][pos] = this->tree.find_way(ch, pos + (my256 - 1));
+    } while (++pos != 0);
+  } while (++ch != 0);
 }
 
 void HuffmanCodec::reset() {
@@ -175,9 +175,12 @@ void HuffmanCodec::reset() {
 
   for (size_t i = 0; i < my256; ++i) {
     delete[] this->table[i];
+    delete[] this->tree_table[i];
   }
   delete[] this->table;
+  delete[] this->tree_table;
   this->table = nullptr;
+  this->tree_table = nullptr;
 }
 
 }  // namespace Codecs
