@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cinttypes>
 #include <queue>
 #include "codec/codec.h"
 #include "huffman/tree.h"
@@ -21,13 +22,16 @@ public:
   void learn(const vector<string_view>&) override;
 
   void reset() override;
+
 protected:
   Heap precalc(const vector<string_view>&);
   void build_tree(Heap&);
   void build_table();
+  void find_all_ways();
 
   Tree tree;
   string** table;
+  size_t* tree_table;
 };
 
 }  // namespace Codecs

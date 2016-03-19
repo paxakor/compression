@@ -1,4 +1,5 @@
 #include <algorithm>
+#include "common/defs.h"
 #include "common/utils.h"
 #include "huffman/tree.h"
 
@@ -56,7 +57,7 @@ size_t Tree::add_node(const Node& nd) {
   return position;
 }
 
-std::vector<bool> Tree::find_way(size_t pos) const {
+std::vector<bool> Tree::get_code(size_t pos) const {
   std::vector<bool> vec;
   while (this->at(pos).parent < this->size()) {
     vec.push_back(this->at(pos).is_left_child);
@@ -64,4 +65,18 @@ std::vector<bool> Tree::find_way(size_t pos) const {
   }
   std::reverse(vec.begin(), vec.end());
   return vec;
+}
+
+size_t Tree::find_way(char ch, size_t pos) const {
+  size_t i = CHAR_SIZE;
+  while (i != 0 && !this->at(pos).leaf) {
+    if (ch & (1 << (CHAR_SIZE - 1))) {
+      pos = this->at(pos).child_l;
+    } else {
+      pos = this->at(pos).child_r;
+    }
+    ch = ch << 1;
+    --i;
+  }
+  return ((CHAR_SIZE - i) << (2 * CHAR_SIZE)) | pos;
 }
