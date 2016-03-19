@@ -85,9 +85,6 @@ void Tester::test_correctness() const {
   while (dat_iter != this->data.end() && dec_iter != this->decoded.end()) {
     if (*dat_iter != *dec_iter) {
       ++error_count;
-      // std::cout << *dat_iter << " " << *dec_iter << std::endl;
-    } else {
-      // std::cout << "---!!!  " << *dat_iter << " " << *dec_iter << std::endl;
     }
     ++dat_iter;
     ++dec_iter;
