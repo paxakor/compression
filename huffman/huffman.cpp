@@ -128,10 +128,6 @@ void HuffmanCodec::build_tree(Heap& heap) {
     this->tree.add_node(Node(a.second, b.second));
   }
   this->tree.back().parent = this->tree.size();
-  for (auto& nd : this->tree) {
-    nd.child_l_ptr = &this->tree[nd.child_l];
-    nd.child_r_ptr = &this->tree[nd.child_r];
-  }
 }
 
 void HuffmanCodec::build_table() {

@@ -18,8 +18,6 @@ public:
   size_t parent;
   size_t child_l;
   size_t child_r;
-  Node* child_l_ptr;
-  Node* child_r_ptr;
   char sym;
   bool leaf;
 };
