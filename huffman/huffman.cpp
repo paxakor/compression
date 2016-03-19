@@ -17,7 +17,7 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
     mv = code_str[0];
     // guaranteed: code_str.size() >= 2
     const auto last = code_str.size() - 1;
-    code = code | code_str[1];
+    code ^= code_str[1];
     if (last != 1) {
       encoded.push_back(code);
       for (size_t iter = 2; iter < last; ++iter) {
@@ -31,7 +31,7 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
     }
   }
   encoded.push_back(code);
-  encoded[0] |= static_cast<char>(mv) << (CHAR_SIZE - log_char_size);
+  encoded[0] ^= static_cast<char>(mv) << (CHAR_SIZE - log_char_size);
 }
 
 void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
@@ -42,8 +42,8 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
   auto iter = log_char_size;
   uint8_t ch = static_cast<uint8_t>(*index) << iter;
   uint8_t next_ch = static_cast<uint8_t>(*(++index));
-  ch = ch | (next_ch >> (CHAR_SIZE - iter));
-  next_ch = next_ch << iter;
+  ch ^= (next_ch >> (CHAR_SIZE - iter));
+  next_ch <<= iter;
   const size_t last = this->tree.size() - 1;
   for (ssize_t j = size - iter; j > 0;) {
     uint16_t pos = last;
@@ -53,13 +53,14 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
       const size_t wasted = pair >> (2 * CHAR_SIZE);
       pos = pair;
       j -= wasted;
-      ch = (ch << wasted) | (next_ch >> (CHAR_SIZE - wasted));
-      next_ch = next_ch << wasted;
+      ch <<= wasted;
+      ch ^= (next_ch >> (CHAR_SIZE - wasted));
+      next_ch <<= wasted;
       iter += wasted;
       if (iter >= CHAR_SIZE) {
         iter -= CHAR_SIZE;
         next_ch = *(++index);
-        ch = ch | (next_ch >> (CHAR_SIZE - iter));
+        ch ^= (next_ch >> (CHAR_SIZE - iter));
         next_ch = next_ch << iter;
       }
     }
