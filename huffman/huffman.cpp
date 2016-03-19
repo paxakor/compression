@@ -63,20 +63,6 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
         next_ch = next_ch << iter;
       }
     }
-    // while (!nd->leaf) {
-    //   if (ch & (1 << (CHAR_SIZE - 1))) {
-    //     nd = nd->child_l_ptr;
-    //   } else {
-    //     nd = nd->child_r_ptr;
-    //   }
-    //   ++iter;
-    //   --j;
-    //   ch = ch << 1;
-    //   if (iter == CHAR_SIZE) {
-    //     ch = *(++index);
-    //     iter = 0;
-    //   }
-    // }
     raw.push_back(tree_ptr[pos].sym);
   }
 }
