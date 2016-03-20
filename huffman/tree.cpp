@@ -4,40 +4,60 @@
 #include "huffman/tree.h"
 
 Node::Node()
-  : is_left_child(false)
+  : is_leaf(false)
+  , is_left_child(false)
   , parent(0)
   , child_l(0)
   , child_r(0)
   , sym(0)
-  , leaf(false)
 {}
 
 Node::Node(char s)
-  : is_left_child(false)
+  : is_leaf(true)
+  , is_left_child(false)
   , parent(0)
   , child_l(0)
   , child_r(0)
   , sym(s)
-  , leaf(true)
 {}
 
 Node::Node(size_t l, size_t r)
-  : is_left_child(false)
+  : is_leaf(false)
+  , is_left_child(false)
   , parent(0)
   , child_l(l)
   , child_r(r)
   , sym(0)
-  , leaf(false)
 {}
 
 Node::Node(const Node& nd)
-  : is_left_child(nd.is_left_child)
+  : is_leaf(nd.is_leaf)
+  , is_left_child(nd.is_left_child)
   , parent(nd.parent)
   , child_l(nd.child_l)
   , child_r(nd.child_r)
   , sym(nd.sym)
-  , leaf(nd.leaf)
 {}
+
+Node::Node(std::string::iterator& begin, const std::string::iterator& cend) {
+  
+}
+
+std::string Node::save(size_t self_pos) const {
+  std::string str;
+  str.reserve(8);
+  str[0] = this->parent >> CHAR_SIZE;
+  str[1] = this->parent;
+  str[2] = this->child_l >> CHAR_SIZE;
+  str[3] = this->child_l;
+  str[4] = this->child_r >> CHAR_SIZE;
+  str[5] = this->child_r;
+  str[6] = this->sym;
+  str[7] = self_pos >> CHAR_SIZE;
+  str[8] = self_pos;
+  return str;
+}
+
 
 size_t Tree::add_node(const Node& nd) {
   size_t position = this->size();
@@ -61,7 +81,7 @@ std::vector<bool> Tree::get_code(size_t pos) const {
 
 std::pair<uint8_t, uint16_t> Tree::find_way(char ch, size_t pos) const {
   size_t i = CHAR_SIZE;
-  while (i != 0 && !this->at(pos).leaf) {
+  while (i != 0 && !this->at(pos).is_leaf) {
     if (ch & (1 << (CHAR_SIZE - 1))) {
       pos = this->at(pos).child_l;
     } else {

@@ -11,15 +11,15 @@ public:
   Node(char);
   Node(size_t, size_t);
   Node(const Node&);
-  Node(std::string::iterator&, const std::string::iterator&);
-  std::string save() const;
+  Node(std::string::iterator&, const std::string::iterator&);  // load
+  std::string save(size_t) const;
 
+  bool is_leaf;
   bool is_left_child;
   size_t parent;
   size_t child_l;
   size_t child_r;
   char sym;
-  bool leaf;
 };
 
 class Tree : public std::vector<Node> {

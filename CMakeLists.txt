@@ -29,7 +29,7 @@ if(GIT_BRANCH STREQUAL "master")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 else()
     message(STATUS "Developer version")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -fno-omit-frame-pointer")
 endif()
 
 file(COPY tester.conf DESTINATION ./)
