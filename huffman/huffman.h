@@ -26,8 +26,8 @@ public:
   void reset() override;
 
 protected:
-  void load_frequency(const string_view&);
   void precalc_frequency(const vector<string_view>&);
+  void load_frequency(const string_view&);
   void learn_or_load_all();
   Heap build_heap();
   void build_tree(Heap&);

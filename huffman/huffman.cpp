@@ -94,29 +94,24 @@ void HuffmanCodec::learn(const vector<string_view>& all_samples) {
   this->learn_or_load_all();
 }
 
-void HuffmanCodec::learn_or_load_all() {
-  Heap heap = this->build_heap();
-  this->build_tree(heap);
-  this->build_table();
-  this->find_all_ways();
-}
-
-void HuffmanCodec::load_frequency(const string_view& config) {
-  size_t iter = 0;
-  const size_t end = config.size();
-  while (iter < end) {
-    char ch = config[iter++];
-    size_t cnt = 0;
-    memcpy(&cnt, &config[iter], sizeof(cnt));
-    iter += sizeof(cnt);
-    this->frequency.insert({ch, cnt});
-  }
-}
-
 size_t HuffmanCodec::sample_size(size_t records_total) const {
   const size_t min_size = 1;
   const size_t n = ceil(pow(log2(records_total), 2));  // don't know why
   return std::max(min_size, n);
+}
+
+void HuffmanCodec::reset() {
+  this->tree.clear();
+  this->frequency.clear();
+
+  for (size_t i = 0; i < my256; ++i) {
+    delete[] this->table[i];
+    delete[] this->tree_table[i];
+  }
+  delete[] this->table;
+  delete[] this->tree_table;
+  this->table = nullptr;
+  this->tree_table = nullptr;
 }
 
 void HuffmanCodec::precalc_frequency(const vector<string_view>& all_samples) {
@@ -137,6 +132,25 @@ void HuffmanCodec::precalc_frequency(const vector<string_view>& all_samples) {
       this->frequency.insert({ch, 0});
     }
   } while (++ch != 0);
+}
+
+void HuffmanCodec::load_frequency(const string_view& config) {
+  size_t iter = 0;
+  const size_t end = config.size();
+  while (iter < end) {
+    char ch = config[iter++];
+    size_t cnt = 0;
+    memcpy(&cnt, &config[iter], sizeof(cnt));
+    iter += sizeof(cnt);
+    this->frequency.insert({ch, cnt});
+  }
+}
+
+void HuffmanCodec::learn_or_load_all() {
+  Heap heap = this->build_heap();
+  this->build_tree(heap);
+  this->build_table();
+  this->find_all_ways();
 }
 
 Heap HuffmanCodec::build_heap() {
@@ -183,20 +197,6 @@ void HuffmanCodec::find_all_ways(){
       this->tree_table[ch][pos] = this->tree.find_way(ch, pos + (my256 - 1));
     } while (++pos != 0);
   } while (++ch != 0);
-}
-
-void HuffmanCodec::reset() {
-  this->tree.clear();
-  this->frequency.clear();
-
-  for (size_t i = 0; i < my256; ++i) {
-    delete[] this->table[i];
-    delete[] this->tree_table[i];
-  }
-  delete[] this->table;
-  delete[] this->tree_table;
-  this->table = nullptr;
-  this->tree_table = nullptr;
 }
 
 }  // namespace Codecs
