@@ -2,6 +2,7 @@
 
 #include <cinttypes>
 #include <queue>
+#include <unordered_map>
 #include "codec/codec.h"
 #include "huffman/tree.h"
 
@@ -25,7 +26,8 @@ public:
   void reset() override;
 
 protected:
-  Heap precalc(const vector<string_view>&);
+  void precalc_frequency(const vector<string_view>&);
+  Heap build_heap();
   void build_tree(Heap&);
   void build_table();
   void find_all_ways();
@@ -33,6 +35,7 @@ protected:
   Tree tree;
   string** table;
   SmallPair** tree_table;
+  std::unordered_map<char, size_t> frequency;
 };
 
 }  // namespace Codecs

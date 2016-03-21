@@ -39,26 +39,6 @@ Node::Node(const Node& nd)
   , sym(nd.sym)
 {}
 
-Node::Node(std::string::iterator& begin, const std::string::iterator& cend) {
-  
-}
-
-std::string Node::save(size_t self_pos) const {
-  std::string str;
-  str.reserve(8);
-  str[0] = this->parent >> CHAR_SIZE;
-  str[1] = this->parent;
-  str[2] = this->child_l >> CHAR_SIZE;
-  str[3] = this->child_l;
-  str[4] = this->child_r >> CHAR_SIZE;
-  str[5] = this->child_r;
-  str[6] = this->sym;
-  str[7] = self_pos >> CHAR_SIZE;
-  str[8] = self_pos;
-  return str;
-}
-
-
 size_t Tree::add_node(const Node& nd) {
   size_t position = this->size();
   this->push_back(nd);

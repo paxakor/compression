@@ -85,19 +85,19 @@ size_t HuffmanCodec::sample_size(size_t records_total) const {
 }
 
 void HuffmanCodec::learn(const vector<string_view>& all_samples) {
-  Heap heap = this->precalc(all_samples);
+  this->precalc_frequency(all_samples);
+  Heap heap = this->build_heap();
   this->build_tree(heap);
   this->build_table();
   this->find_all_ways();
 }
 
-Heap HuffmanCodec::precalc(const vector<string_view>& all_samples) {
-  std::unordered_map<char, size_t> frequency;
+void HuffmanCodec::precalc_frequency(const vector<string_view>& all_samples) {
   for (const auto& record : all_samples) {
     for (const auto& ch : record) {
-      auto it = frequency.find(ch);
-      if (it == frequency.end()) {
-        frequency.insert({ch, 1});
+      auto it = this->frequency.find(ch);
+      if (it == this->frequency.end()) {
+        this->frequency.insert({ch, 1});
       } else {
         ++(it->second);
       }
@@ -106,13 +106,15 @@ Heap HuffmanCodec::precalc(const vector<string_view>& all_samples) {
 
   char ch = CHAR_MIN;
   do {
-    if (frequency.find(ch) == frequency.end()) {
-      frequency.insert({ch, 0});
+    if (this->frequency.find(ch) == this->frequency.end()) {
+      this->frequency.insert({ch, 0});
     }
   } while (ch++ != CHAR_MAX);
+}
 
+Heap HuffmanCodec::build_heap() {
   Heap heap;
-  for (const auto& ch : frequency) {
+  for (const auto& ch : this->frequency) {
     Node nd(ch.first);
     size_t position = this->tree.add_node(nd);
     heap.push({ch.second, position});

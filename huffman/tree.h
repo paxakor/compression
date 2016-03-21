@@ -11,8 +11,6 @@ public:
   Node(char);
   Node(size_t, size_t);
   Node(const Node&);
-  Node(std::string::iterator&, const std::string::iterator&);  // load
-  std::string save(size_t) const;
 
   bool is_leaf;
   bool is_left_child;
