@@ -10,6 +10,7 @@ using std::vector;
 
 vector<string> split(const string&, size_t = 0, char = ' ');
 string bools_to_string(const vector<bool>&, size_t = 0);
+void shrink_all_strings(vector<string>&);
 
 // utils for debug
 string print_string_binary(const string&);

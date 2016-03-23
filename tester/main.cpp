@@ -16,12 +16,15 @@ int main () {
   tester.read_data(conf["data_file"]);
   tester.learn_codec();
   tester.test_encode();
+
+#if 1
   const auto state = huffman.save();
   huffman.reset();
   huffman.load(state);
   tester.test_decode();
   tester.test_size();
   tester.test_correctness();
+#endif
 
   std::cout << "Program ended in " << time(nullptr) - start <<
     " seconds" << std::endl;

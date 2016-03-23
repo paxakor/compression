@@ -47,6 +47,12 @@ string bools_to_string(const vector<bool>& bools, size_t mv) {
   return str;
 }
 
+void shrink_all_strings(vector<string>& vec) {
+  for (auto& str : vec) {
+    str.shrink_to_fit();
+  }
+}
+
 string print_string_binary(const string& str) {
   string result;
   for (const auto& ch : str) {

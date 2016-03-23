@@ -32,6 +32,7 @@ void Tester::read_data(const string& data_file) {
   }
   input.close();
   std::cout << "Read " << this->data.size() << " records" << std::endl;
+  shrink_all_strings(this->data);
 }
 
 void Tester::set_codec(Codecs::CodecIFace& codec) {
@@ -49,6 +50,7 @@ void Tester::test_encode() {
   }
   std::cout << "Encoding ended in " << (clock() - start) / CLOCKS_PER_SEC <<
     " seconds" << std::endl;
+  shrink_all_strings(this->encoded);
 }
 
 void Tester::test_decode() {
@@ -62,6 +64,7 @@ void Tester::test_decode() {
   }
   std::cout << "Decoding ended in " << (clock() - start) / CLOCKS_PER_SEC <<
     " seconds" << std::endl;
+  shrink_all_strings(this->decoded);
 }
 
 void Tester::test_correctness() const {

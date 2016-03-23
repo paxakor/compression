@@ -147,6 +147,7 @@ void HuffmanCodec::load_frequency(const string_view& config) {
 }
 
 void HuffmanCodec::learn_or_load_all() {
+  this->tree.reserve(my256 * 2);
   Heap heap = this->build_heap();
   this->build_tree(heap);
   this->build_table();
