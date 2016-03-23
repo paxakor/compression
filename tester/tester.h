@@ -12,7 +12,6 @@ class Tester {
 public:
   void learn_codec();
   void read_data(const string&);
-  void save_encoded(const string&) const;
   void set_codec(Codecs::CodecIFace&);
   void test_correctness() const;
   void test_decode();

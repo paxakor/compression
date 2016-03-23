@@ -34,14 +34,6 @@ void Tester::read_data(const string& data_file) {
   std::cout << "Read " << this->data.size() << " records" << std::endl;
 }
 
-void Tester::save_encoded(const string& output_file) const {
-  std::ofstream output(output_file, std::ios::binary);
-  for (const auto& record : this->encoded) {
-    output << record << std::endl;
-  }
-  output.close();
-}
-
 void Tester::set_codec(Codecs::CodecIFace& codec) {
   this->codec = &codec;
 }
