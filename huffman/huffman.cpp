@@ -9,6 +9,17 @@ namespace Codecs {
 
 const size_t log_char_size = ceil(log2(CHAR_SIZE));
 
+HuffmanCodec::HuffmanCodec()
+  : tree()
+  , table(nullptr)
+  , tree_table(nullptr)
+  , frequency()
+{}
+
+HuffmanCodec::~HuffmanCodec() {
+  this->reset();
+}
+
 void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
   encoded.reserve(raw.size() * 2);
   char code = 0;
@@ -105,13 +116,21 @@ void HuffmanCodec::reset() {
   this->frequency.clear();
 
   for (size_t i = 0; i < my256; ++i) {
-    delete[] this->table[i];
-    delete[] this->tree_table[i];
+    if (this->table[i] != nullptr) {
+      delete[] this->table[i];
+    }
+    if (this->tree_table[i] != nullptr) {
+      delete[] this->tree_table[i];
+    }
   }
-  delete[] this->table;
-  delete[] this->tree_table;
-  this->table = nullptr;
-  this->tree_table = nullptr;
+  if (this->table != nullptr) {
+    delete[] this->table;
+    this->table = nullptr;
+  }
+  if (this->tree_table != nullptr) {
+    delete[] this->tree_table;
+    this->tree_table = nullptr;
+  }
 }
 
 void HuffmanCodec::precalc_frequency(const vector<string_view>& all_samples) {
@@ -178,7 +197,7 @@ void HuffmanCodec::build_tree(Heap& heap) {
 }
 
 void HuffmanCodec::build_table() {
-  this->table = new string* [my256];
+  this->table = new string*[my256];
   for (size_t i = 0; i < my256; ++i) {
     string*& codes = this->table[static_cast<uint8_t>(this->tree[i].sym)];
     codes = new string[CHAR_SIZE];

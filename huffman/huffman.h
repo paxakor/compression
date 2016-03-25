@@ -14,6 +14,9 @@ using Heap = std::priority_queue< Pair, vector<Pair>, std::greater<Pair> >;
 
 class HuffmanCodec : public CodecIFace {
 public:
+  HuffmanCodec();
+  ~HuffmanCodec();
+
   void encode(string&, const string_view&) const override;
   void decode(string&, const string_view&) const override;
 
