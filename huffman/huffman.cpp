@@ -71,16 +71,15 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
   const size_t rest = ((encoded[0] >> (CHAR_SIZE - log_char_size)) &
     ((1 << log_char_size) - 1));
   const size_t size = (encoded.size() - 1) * CHAR_SIZE + rest;
+  const Node* const tree_ptr = &this->tree.front();
   auto index = encoded.begin();
   auto iter = log_char_size;
-  uint8_t ch = static_cast<uint8_t>(*index) << iter;
-  uint8_t next_ch = static_cast<uint8_t>(*(++index));
+  uint8_t ch = *index << iter;
+  uint8_t next_ch = *(++index);
   ch ^= (next_ch >> (CHAR_SIZE - iter));
   next_ch <<= iter;
-  const size_t last = this->tree.size() - 1;
   for (size_t j = iter; j < size;) {
-    uint16_t pos = last;
-    const Node* const tree_ptr = &this->tree.front();
+    size_t pos = 2 * my256 - 2;  // (tree.size() - 1) -- position of root node
     while (!tree_ptr[pos].is_leaf) {
       const auto pair = this->tree_table[ch][pos - (my256 - 1)];
       const size_t wasted = pair.first;
