@@ -14,12 +14,32 @@ HuffmanCodec::HuffmanCodec()
   , tree_table(nullptr)
   , frequency(nullptr)
 {
+  this->table = new string*[my256];
+  for (size_t i = 0; i < my256; ++i) {
+    this->table[i] = new string[CHAR_SIZE];
+  }
+
+  this->tree_table = new SmallPair*[my256];
+  for (size_t i = 0; i < my256; ++i) {
+    this->tree_table[i] = new SmallPair[my256];
+  }
+
   this->frequency = new size_t[my256];
   memset(this->frequency, 0, this->fr_sz);
 }
 
 HuffmanCodec::~HuffmanCodec() {
-  this->reset();
+  for (size_t i = 0; i < my256; ++i) {
+    delete[] this->table[i];
+  }
+  delete[] this->table;
+
+  for (size_t i = 0; i < my256; ++i) {
+    delete[] this->tree_table[i];
+  }
+  delete[] this->tree_table;
+
+  delete[] this->frequency;
 }
 
 void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
@@ -110,24 +130,6 @@ size_t HuffmanCodec::sample_size(size_t records_total) const {
 
 void HuffmanCodec::reset() {
   this->tree.clear();
-  memset(this->frequency, 0, this->fr_sz);
-
-  for (size_t i = 0; i < my256; ++i) {
-    if (this->table[i] != nullptr) {
-      delete[] this->table[i];
-    }
-    if (this->tree_table[i] != nullptr) {
-      delete[] this->tree_table[i];
-    }
-  }
-  if (this->table != nullptr) {
-    delete[] this->table;
-    this->table = nullptr;
-  }
-  if (this->tree_table != nullptr) {
-    delete[] this->tree_table;
-    this->tree_table = nullptr;
-  }
 }
 
 void HuffmanCodec::precalc_frequency(const vector<string_view>& all_samples) {
@@ -139,8 +141,7 @@ void HuffmanCodec::precalc_frequency(const vector<string_view>& all_samples) {
 }
 
 void HuffmanCodec::load_frequency(const string_view& config) {
-  const size_t n = this->fr_sz;
-  memcpy(this->frequency, &config[0], n);
+  memcpy(this->frequency, &config[0], this->fr_sz);
 }
 
 void HuffmanCodec::learn_or_load_all() {
@@ -175,10 +176,8 @@ void HuffmanCodec::build_tree(Heap& heap) {
 }
 
 void HuffmanCodec::build_table() {
-  this->table = new string*[my256];
   for (size_t i = 0; i < my256; ++i) {
     string*& codes = this->table[static_cast<uint8_t>(this->tree[i].sym)];
-    codes = new string[CHAR_SIZE];
     for (size_t j = 0; j < CHAR_SIZE; ++j) {
       codes[j] = bools_to_string(this->tree.get_code(i), j);
     }
@@ -186,11 +185,9 @@ void HuffmanCodec::build_table() {
 }
 
 void HuffmanCodec::find_all_ways(){
-  this->tree_table = new SmallPair*[my256];
   uint8_t ch = 0;
   do {
     uint8_t pos = 0;
-    this->tree_table[ch] = new SmallPair[my256];
     do {
       this->tree_table[ch][pos] = this->tree.find_way(ch, pos + (my256 - 1));
     } while (++pos != 0);
