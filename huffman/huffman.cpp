@@ -10,22 +10,19 @@ const size_t log_char_size = ceil(log2(CHAR_SIZE));
 
 HuffmanCodec::HuffmanCodec()
   : tree()
-  , table(nullptr)
-  , tree_table(nullptr)
-  , frequency(nullptr)
+  , table(new string*[my256])
+  , tree_table(new SmallPair*[my256])
+  , frequency(new size_t[my256])
 {
-  this->table = new string*[my256];
   for (size_t i = 0; i < my256; ++i) {
     this->table[i] = new string[CHAR_SIZE];
   }
 
-  this->tree_table = new SmallPair*[my256];
   for (size_t i = 0; i < my256; ++i) {
     this->tree_table[i] = new SmallPair[my256];
   }
 
-  this->frequency = new size_t[my256];
-  memset(this->frequency, 0, this->fr_sz);
+  memset(this->frequency, 0, fr_sz);
 }
 
 HuffmanCodec::~HuffmanCodec() {
@@ -105,10 +102,9 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
 }
 
 string HuffmanCodec::save() const {
-  const size_t n = this->fr_sz;
   string data;
-  data.resize(n);
-  memcpy(&data[0], this->frequency, n);
+  data.resize(fr_sz);
+  memcpy(&data[0], this->frequency, fr_sz);
   return data;
 }
 
@@ -141,7 +137,7 @@ void HuffmanCodec::precalc_frequency(const vector<string_view>& all_samples) {
 }
 
 void HuffmanCodec::load_frequency(const string_view& config) {
-  memcpy(this->frequency, &config[0], this->fr_sz);
+  memcpy(this->frequency, &config[0], fr_sz);
 }
 
 void HuffmanCodec::learn_or_load_all() {
