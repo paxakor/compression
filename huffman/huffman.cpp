@@ -1,7 +1,6 @@
 #include <cmath>
 #include <cstring>
 #include <algorithm>
-#include "common/defs.h"
 #include "common/utils.h"
 #include "huffman/huffman.h"
 
@@ -13,8 +12,11 @@ HuffmanCodec::HuffmanCodec()
   : tree()
   , table(nullptr)
   , tree_table(nullptr)
-  , frequency()
-{}
+  , frequency(nullptr)
+{
+  this->frequency = new size_t[my256];
+  memset(this->frequency, 0, this->fr_sz);
+}
 
 HuffmanCodec::~HuffmanCodec() {
   this->reset();
@@ -83,15 +85,10 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
 }
 
 string HuffmanCodec::save() const {
+  const size_t n = this->fr_sz;
   string data;
-  data.resize((sizeof(char) + sizeof(size_t)) * my256);
-  size_t iter = 0;
-  for (const auto& ch : this->frequency) {
-    data[iter++] = ch.first;
-    size_t cnt = ch.second;
-    memcpy(&data[iter], &cnt, sizeof(cnt));
-    iter += sizeof(cnt);
-  }
+  data.resize(n);
+  memcpy(&data[0], this->frequency, n);
   return data;
 }
 
@@ -113,7 +110,7 @@ size_t HuffmanCodec::sample_size(size_t records_total) const {
 
 void HuffmanCodec::reset() {
   this->tree.clear();
-  this->frequency.clear();
+  memset(this->frequency, 0, this->fr_sz);
 
   for (size_t i = 0; i < my256; ++i) {
     if (this->table[i] != nullptr) {
@@ -136,33 +133,14 @@ void HuffmanCodec::reset() {
 void HuffmanCodec::precalc_frequency(const vector<string_view>& all_samples) {
   for (const auto& record : all_samples) {
     for (const auto& ch : record) {
-      auto it = this->frequency.find(ch);
-      if (it == this->frequency.end()) {
-        this->frequency.insert({ch, 1});
-      } else {
-        ++(it->second);
-      }
+      this->frequency[static_cast<uint8_t>(ch)] += 1;
     }
   }
-
-  char ch = 0;
-  do {
-    if (this->frequency.find(ch) == this->frequency.end()) {
-      this->frequency.insert({ch, 0});
-    }
-  } while (++ch != 0);
 }
 
 void HuffmanCodec::load_frequency(const string_view& config) {
-  size_t iter = 0;
-  const size_t end = config.size();
-  while (iter < end) {
-    char ch = config[iter++];
-    size_t cnt = 0;
-    memcpy(&cnt, &config[iter], sizeof(cnt));
-    iter += sizeof(cnt);
-    this->frequency.insert({ch, cnt});
-  }
+  const size_t n = this->fr_sz;
+  memcpy(this->frequency, &config[0], n);
 }
 
 void HuffmanCodec::learn_or_load_all() {
@@ -175,11 +153,11 @@ void HuffmanCodec::learn_or_load_all() {
 
 Heap HuffmanCodec::build_heap() {
   Heap heap;
-  char ch = 0;
+  uint8_t ch = 0;
   do {
     Node nd(ch);
     size_t position = this->tree.add_node(nd);
-    heap.push({this->frequency.at(ch), position});
+    heap.push({this->frequency[ch], position});
   } while (++ch != 0);
   return heap;
 }

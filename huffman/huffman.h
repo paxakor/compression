@@ -4,6 +4,7 @@
 #include <queue>
 #include <unordered_map>
 #include "codec/codec.h"
+#include "common/defs.h"
 #include "huffman/tree.h"
 
 namespace Codecs {
@@ -40,7 +41,8 @@ protected:
   Tree tree;
   string** table;
   SmallPair** tree_table;
-  std::unordered_map<char, size_t> frequency;
+  size_t* frequency;
+  static const size_t fr_sz = my256 * sizeof(size_t);
 };
 
 }  // namespace Codecs
