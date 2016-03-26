@@ -81,7 +81,7 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
   for (size_t j = iter; j < size;) {
     size_t pos = 2 * my256 - 2;  // (tree.size() - 1) -- position of root node
     while (!tree_ptr[pos].is_leaf) {
-      const auto pair = this->tree_table[ch][pos - (my256 - 1)];
+      const auto pair = this->tree_table[pos - (my256 - 1)][ch];
       const size_t wasted = pair.first;
       pos = pair.second;
       j += wasted;
@@ -184,7 +184,7 @@ void HuffmanCodec::find_all_ways(){
   do {
     uint8_t pos = 0;
     do {
-      this->tree_table[ch][pos] = this->tree.find_way(ch, pos + (my256 - 1));
+      this->tree_table[pos][ch] = this->tree.find_way(ch, pos + (my256 - 1));
     } while (++pos != 0);
   } while (++ch != 0);
 }
