@@ -28,16 +28,18 @@ set(HEADERS
     tester/tester.h)
 
 add_executable(tester ${SOURCES})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Ofast")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
+    -Wall -Wextra -Weverything -std=c++14 -Ofast -march=native")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
+    -g -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Werror")
 
 if(GIT_BRANCH STREQUAL "master")
     message(STATUS "Release version")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    set(CMAKE_BUILD_TYPE Release)
 else()
     message(STATUS "Developer version")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -fno-omit-frame-pointer")
+    set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-file(COPY tester.conf DESTINATION ./)
+file(COPY tester/tester.conf DESTINATION ./)
