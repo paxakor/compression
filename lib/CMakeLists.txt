@@ -6,10 +6,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(functions)
 add_compile_flags(CMAKE_CXX_FLAGS)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                    ${CMAKE_CURRENT_SOURCE_DIR}/codec
-                    ${CMAKE_CURRENT_SOURCE_DIR}/common
-                    ${CMAKE_CURRENT_SOURCE_DIR}/huffman)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(SOURCES
   common/utils.cpp
