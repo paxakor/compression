@@ -32,7 +32,7 @@ void MultiCodec::decode(string& raw, const string_view& encoded) const {}
 string MultiCodec::save() const {
   static const auto cnt = sizeof(size_t);
   string data;
-  for_each_codec([&](CodecIFace* cdc){
+  for_each_codec([&](CodecIFace* cdc) {
     const auto tmp = cdc->save();
     const size_t saved_size = tmp.size();
     char len[cnt];
@@ -46,7 +46,7 @@ string MultiCodec::save() const {
 void MultiCodec::load(const string_view& config) {
   static const auto cnt = sizeof(size_t);
   size_t already_read = 0;
-  for_each_codec([&](CodecIFace* cdc){
+  for_each_codec([&](CodecIFace* cdc) {
     size_t new_size;
     memcpy(&new_size, &config[already_read], cnt);
     already_read += cnt;
@@ -56,21 +56,21 @@ void MultiCodec::load(const string_view& config) {
 }
 
 void MultiCodec::learn(const vector<string_view>& all_samples) {
-  for_each_codec([&](CodecIFace* cdc){
+  for_each_codec([&](CodecIFace* cdc) {
     cdc->learn(all_samples);
   });
 }
 
 size_t MultiCodec::sample_size(size_t records_total) const {
   size_t max = 0;
-  for_each_codec([&](const CodecIFace* cdc){
+  for_each_codec([&](const CodecIFace* cdc) {
     max = std::max(max, cdc->sample_size(records_total));
   });
   return max;
 }
 
 void MultiCodec::reset() {
-  for_each_codec([](CodecIFace* cdc){
+  for_each_codec([](CodecIFace* cdc) {
     cdc->reset();
   });
 }
