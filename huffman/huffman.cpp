@@ -164,8 +164,8 @@ void HuffmanCodec::build_tree(Heap& heap) {
     heap.pop();
     auto b = heap.top();
     heap.pop();
-    heap.push({a.first + b.first, this->tree.size()});
-    this->tree.add_node(Node(a.second, b.second));
+    size_t position = this->tree.add_node(Node(a.second, b.second));
+    heap.push({a.first + b.first, position});
   }
   this->tree.back().parent = this->tree.size();
 }
