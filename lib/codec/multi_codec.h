@@ -12,8 +12,7 @@ using std::vector;
 
 class MultiCodec : public CodecIFace {
 public:
-  MultiCodec();
-  MultiCodec(size_t, ...);
+  MultiCodec(size_t, CodecIFace*, ...);
 
   void push(CodecIFace*);
   void pop();

@@ -6,12 +6,11 @@
 
 namespace Codecs {
 
-MultiCodec::MultiCodec() { }
-
-MultiCodec::MultiCodec(size_t count, ...) {
+MultiCodec::MultiCodec(size_t count, CodecIFace* fst_cdc, ...) {
+  this->push(fst_cdc);
   va_list args;
   va_start(args, count);
-  for (size_t i = 0; i < count; ++i) {
+  for (size_t i = 0; i < count - 1; ++i) {
     this->push(va_arg(args, CodecIFace*));
   }
   va_end(args);
@@ -27,9 +26,6 @@ void MultiCodec::pop() {
 
 void MultiCodec::encode(string& encoded, const string_view& raw) const {
   const auto codecs_count = this->codecs_list.size();
-  if (codecs_count == 0) {
-    return;
-  }
   auto cdc = this->codecs_list.begin();
   if (codecs_count == 1) {
     (*cdc)->encode(encoded, raw);
@@ -46,9 +42,6 @@ void MultiCodec::encode(string& encoded, const string_view& raw) const {
 
 void MultiCodec::decode(string& raw, const string_view& encoded) const {
   const auto codecs_count = this->codecs_list.size();
-  if (codecs_count == 0) {
-    return;
-  }
   auto cdc = this->codecs_list.rbegin();
   if (codecs_count == 1) {
     (*cdc)->decode(raw, encoded);

@@ -11,8 +11,8 @@ int main () {
   Config conf;
   conf.read();
 
-  Codecs::HuffmanCodec huffman[3];
-  Codecs::MultiCodec main_codec(3, huffman, huffman + 1, huffman + 2);
+  Codecs::HuffmanCodec huffman[2];
+  Codecs::MultiCodec main_codec(2, huffman, huffman + 1);
   Tester tester;
   tester.set_codec(main_codec);
   tester.read_data(conf["data_file"]);
