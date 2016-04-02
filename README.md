@@ -1,5 +1,7 @@
 # My codecs for compression-project
 
+[![Build Status](https://travis-ci.org/paxakor/compression.svg?branch=master)](https://travis-ci.org/paxakor/compression)
+
 ## Что хочется получить в результате?
 * Кодеки для сжатия больших количеств малых записей.
  + Сжатие должно производиться для каждой записи отдельно для возможности отдельного раскодирования в будущем.
