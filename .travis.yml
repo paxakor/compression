@@ -1,4 +1,8 @@
 language: cpp
+addons:
+  apt:
+    packages:
+    - cmake
 compiler:
   - gcc
   - clang
@@ -6,9 +10,11 @@ os:
   - linux
   - osx
 script:
+  - echo "data_file data" > tester.conf
   - mkdir build
   - cd build
   - cmake ..
   - make
   - cd tester
+  - dd if=/dev/urandom of=./data bs=8M count=4
   - ./tester
