@@ -5,6 +5,10 @@ compiler:
 os:
   - linux
   - osx
+branches:
+  only:
+    - master
+    - dev
 script:
   - mkdir build
   - cd build
