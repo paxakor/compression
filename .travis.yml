@@ -2,7 +2,9 @@ language: cpp
 addons:
   apt:
     packages:
-    - cmake
+    - cmake-3
+    - clang
+    - gcc
 compiler:
   - gcc
   - clang
