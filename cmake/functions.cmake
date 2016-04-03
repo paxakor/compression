@@ -1,15 +1,13 @@
 # There are common functions for configuring make script.
 
 # get_git_branch returns name of git branch
-function(get_git_branch branch)
+function(get_git_branch GIT_BRANCH)
   execute_process(
     COMMAND git rev-parse --abbrev-ref HEAD
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE GIT_BRANCH
+    OUTPUT_VARIABLE ${GIT_BRANCH}
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
-  # message(STATUS "Git branch: ${GIT_BRANCH}")
-  set(${branch} GIT_BRANCH PARENT_SCOPE)
 endfunction()
 
 # There is a function for setting build type.
@@ -18,13 +16,10 @@ endfunction()
 function(get_build_type TYPE)
   get_git_branch(GIT_BRANCH)
   if(GIT_BRANCH STREQUAL "master")
-    # message(STATUS "Release version")
-    set(TMP_TYPE "Release")
+    set(${TYPE} "Release")
   else()
-    # message(STATUS "Developer version")
-    set(TMP_TYPE "Debug")
+    set(${TYPE} "Debug")
   endif()
-  set(${TYPE} "${TMP_TYPE}" PARENT_SCOPE)
 endfunction()
 
 # The main function. It adds compile flags to FLAGS variable.
@@ -48,5 +43,5 @@ function(add_compile_flags FLAGS)
     add_flag("-ggdb")
   endif()
 
-  set(${FLAGS} "${CMAKE_CXX_FLAGS} ${TMP_FLAGS}" PARENT_SCOPE)
+  set(${FLAGS} "${${FLAGS}} ${TMP_FLAGS}" PARENT_SCOPE)
 endfunction()
