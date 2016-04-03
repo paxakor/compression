@@ -13,6 +13,7 @@ before_install:
   - cd cmake-3.5.1
   - ./configure
   - make
+  - cd ..
 script:
   - echo "data_file data" > tester.conf
   - pwd && mkdir build
