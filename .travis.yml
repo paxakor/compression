@@ -17,17 +17,19 @@ compiler:
 
 os:
   - linux
-  # - osx
+  - osx
 
 before_install:
-  - sudo apt-get update -qq
-  - uname -a
-  - wget https://cmake.org/files/v3.5/cmake-3.5.1.tar.gz
-  - tar xf cmake-3.5.1.tar.gz
-  - cd cmake-3.5.1
-  - ./configure
-  - make
-  - cd ..
+  - sudo apt-get install software-properties-common
+  - sudo add-apt-repository ppa:george-edison55/cmake-3.x
+  - sudo apt-get update
+  - sudo apt-get install
+  # - wget https://cmake.org/files/v3.5/cmake-3.5.1.tar.gz
+  # - tar xf cmake-3.5.1.tar.gz
+  # - cd cmake-3.5.1
+  # - ./configure
+  # - make
+  # - cd ..
 
 script:
   - $(which $CXX) --version
