@@ -2,7 +2,7 @@
 
 ## Build status
 * Master: [![Build Status](https://travis-ci.org/paxakor/compression.svg?branch=master)](https://travis-ci.org/paxakor/compression)
-* Dev: [![Build Status](https://travis-ci.org/paxakor/compression.svg?branch=travis)](https://travis-ci.org/paxakor/compression)
+* Dev: [![Build Status](https://travis-ci.org/paxakor/compression.svg?branch=dev)](https://travis-ci.org/paxakor/compression)
 
 ## Что хочется получить в результате?
 * Кодеки для сжатия больших количеств малых записей.
@@ -14,7 +14,7 @@
  + BWT.
  + MTF.
  + LZ*
-* Научиться оптимизировать написаный код.
+* Оптимизировать написаный код.
 
 ## Что уже сделано?
 * Для написания кодеков.
