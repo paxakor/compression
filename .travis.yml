@@ -2,8 +2,8 @@ language: cpp
 sudo: required
 dist: trusty
 compiler:
-  - g++
-  - clang++
+  - gсс
+  - clang
 os:
   - linux
   - osx
@@ -15,10 +15,10 @@ before_install:
   - make
 script:
   - echo "data_file data" > tester.conf
-  - mkdir build
-  - cd build
-  - cmake ..
-  - make
+  - pwd && mkdir build
+  - pwd && cd build
+  - pwd && cmake ..
+  - pwd && make
   - cd tester
   - dd if=/dev/urandom of=./data bs=8M count=4
   - ./tester
