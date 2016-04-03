@@ -1,19 +1,25 @@
 language: cpp
 sudo: required
 dist: trusty
+cache: apt
+
 addons:
   apt:
     sources:
-    - ubuntu-toolchain-r-test
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.8
     packages:
-    - g++-5
-cache: apt
+      - g++-5
+      - clang-3.8
+
 compiler:
   - g++-5
-  # - clang
+  - clang-3.8
+
 os:
   - linux
   # - osx
+
 before_install:
   - uname -a
   - wget https://cmake.org/files/v3.5/cmake-3.5.1.tar.gz
@@ -22,12 +28,16 @@ before_install:
   - ./configure
   - make
   - cd ..
+
 script:
   - echo "data_file data" > tester/tester.conf
-  - pwd && mkdir build
-  - pwd && cd build
-  - pwd && cmake ..
-  - pwd && make
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
   - cd tester
   - dd if=/dev/urandom of=./data bs=8M count=4
   - ./tester
+
+notifications:
+  email: false
