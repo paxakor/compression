@@ -20,32 +20,22 @@ sudo: required
 #   - linux
 #   - osx
 
+
+addons:
+  apt:
+    packages:
+      - g++-5
+      - clang-3.8
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.8
+
 matrix:
   include:
     - os: linux
       env: CXX=g++-5 CC=gcc-5
-      addons:
-        apt:
-          packages:
-            - g++-5
-          sources:
-            - ubuntu-toolchain-r-test
-    - os: linux
-      env: CXX=g++-4.9 CC=gcc-4.9
-      addons:
-        apt:
-          packages:
-            - g++-4.9
-          sources:
-            - ubuntu-toolchain-r-test
     - os: linux
       env: CXX=clang++-3.8 CC=clang-3.8
-      addons:
-        apt:
-          packages:
-            - clang-3.8
-          sources:
-            - llvm-toolchain-precise
 
 # before_install:
 #   # installing cmake 3.5
