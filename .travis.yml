@@ -21,6 +21,7 @@ os:
   # - osx
 
 before_install:
+  - sudo apt-get update -qq
   - uname -a
   - wget https://cmake.org/files/v3.5/cmake-3.5.1.tar.gz
   - tar xf cmake-3.5.1.tar.gz
