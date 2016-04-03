@@ -15,7 +15,7 @@ before_install:
   - make
   - cd ..
 script:
-  - echo "data_file data" > tester.conf
+  - echo "data_file data" > tester/tester.conf
   - pwd && mkdir build
   - pwd && cd build
   - pwd && cmake ..
