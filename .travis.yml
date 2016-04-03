@@ -1,6 +1,5 @@
 cache: apt
 dist: trusty
-language: cpp
 sudo: required
 
 addons:
