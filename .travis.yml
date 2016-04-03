@@ -1,13 +1,21 @@
 language: cpp
 sudo: required
 dist: trusty
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-5
+cache: apt
 compiler:
   - gсс
-  - clang
+  # - clang
 os:
   - linux
-  - osx
+  # - osx
 before_install:
+  - uname -a
   - wget https://cmake.org/files/v3.5/cmake-3.5.1.tar.gz
   - tar xf cmake-3.5.1.tar.gz
   - cd cmake-3.5.1
