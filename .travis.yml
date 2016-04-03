@@ -1,16 +1,18 @@
 language: cpp
-addons:
-  apt:
-    packages:
-    - cmake-3
-    - clang
-    - gcc
+sudo: required
+dist: trusty
 compiler:
   - gcc
   - clang
 os:
   - linux
   - osx
+before_install:
+  - wget https://cmake.org/files/v3.5/cmake-3.5.1-Linux-x86_64.tar.gz
+  - tar xf cmake*
+  - cd cmake*
+  - ./configure
+  - make
 script:
   - echo "data_file data" > tester.conf
   - mkdir build
