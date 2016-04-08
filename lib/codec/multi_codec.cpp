@@ -83,8 +83,17 @@ void MultiCodec::load(const string_view& config) {
 }
 
 void MultiCodec::learn(const vector<string_view>& all_samples) {
+  vector<string> samples;
+  for (const auto& smpl : all_samples) {
+    samples.emplace_back(smpl.to_string());
+  }
   for_each_codec([&](CodecIFace* cdc) {
-    cdc->learn(all_samples);
+    cdc->learn(vector<string_view>(samples.begin(), samples.end()));
+    for (auto& smpl : samples) {
+      string tmp;
+      cdc->encode(tmp, smpl);
+      smpl = tmp;
+    }
   });
 }
 
