@@ -9,6 +9,7 @@ add_compile_flags(CMAKE_CXX_FLAGS)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(SOURCES
+  BWT/BWT.cpp
   codec/multi_codec.cpp
   common/utils.cpp
   huffman/huffman.cpp

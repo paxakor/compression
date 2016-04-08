@@ -1,5 +1,6 @@
 #include <ctime>
 #include <iostream>
+#include "BWT/BWT.h"
 #include "codec/multi_codec.h"
 #include "common/utils.h"
 #include "huffman/huffman.h"
@@ -11,8 +12,9 @@ int main () {
   Config conf;
   conf.read();
 
-  Codecs::HuffmanCodec huffman[2];
-  Codecs::MultiCodec main_codec(2, huffman, huffman + 1);
+  Codecs::HuffmanCodec huffman;
+  Codecs::BWTCodec bwt;
+  Codecs::MultiCodec main_codec(2, &bwt, &huffman);
   Tester tester;
   tester.set_codec(main_codec);
   tester.read_data(conf["data_file"]);
