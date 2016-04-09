@@ -7,16 +7,26 @@ using std::pair;
 using std::string;
 using std::vector;
 
+size_t char_to_size_t(char ch) {
+  return static_cast<unsigned char>(ch);
+}
+
 template <typename SomeStr>
 vector<size_t> counting_sort(const SomeStr& str) {
   vector< vector<size_t> > counts(my256);
+  size_t min = 0, max = 0;
   for (size_t i = 0; i < str.size(); ++i) {
-    counts[static_cast<size_t>(str[i])].push_back(i);
+    size_t t = char_to_size_t(str[i]);
+    counts[t].push_back(i);
+    min = std::min(min, t);
+    max = std::max(max, t);
   }
   vector<size_t> res;
-  for (const auto& cnt : counts) {
-    res.insert(res.end(), cnt.cbegin(), cnt.cend());
-  }
+  do {
+    if (!counts[min].empty()) {
+      res.insert(res.end(), counts[min].cbegin(), counts[min].cend());
+    }
+  } while (min++ != max);
   return res;
 }
 
@@ -26,7 +36,7 @@ vector<size_t> suff_mas(const SomeStr& str) {
   auto permutation = counting_sort(str);
   vector< pair<size_t, size_t> > classes(n);
   for (size_t i = 0; i < n; ++i) {
-    classes[i] = {str[i], 0};
+    classes[i] = {char_to_size_t(str[i]), 0};
   }
   for (size_t LEN = 1; LEN < n; LEN *= 2) {
     vector<size_t> colours(n);
