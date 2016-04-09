@@ -15,4 +15,4 @@ set(SOURCES
   huffman/huffman.cpp
   huffman/tree.cpp)
 
-add_library(codec SHARED ${SOURCES})
+add_library(codec STATIC ${SOURCES})

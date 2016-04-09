@@ -4,11 +4,12 @@
 #include <string>
 #include "BWT/BWT.h"
 #include "BWT/algo.h"
+#include <iostream>
 
 namespace Codecs {
 
 void BWTCodec::encode(string& encoded, const string_view& raw) const {
-  size_t num;
+  size_t num = 0;
   const auto sz = sizeof(num);
   const auto n = raw.size();
   const auto permutation = suff_mas(raw);
@@ -43,7 +44,9 @@ void BWTCodec::decode(string& raw, const string_view& encoded) const {
     }
     std::sort(table.begin(), table.end());
   }
-  raw = table[num];
+  if (num < n) {
+    raw = table[num];
+  }
 }
 
 string BWTCodec::save() const {
