@@ -1,7 +1,11 @@
-#include <ctime>
+// Copyright 2016, Pavel Korozevtsev.
+
 #include <experimental/algorithm>
+#include <ctime>
 #include <fstream>
 #include <iostream>
+#include <string>
+#include <vector>
 #include "tester/tester.h"
 #include "common/utils.h"
 
@@ -98,7 +102,7 @@ void Tester::test_size() const {
 size_t print_size(const vector<string>& vec, const string& name) {
   size_t sz = 0;
   for (const auto& s : vec) {
-    sz += s.size() + 1;
+    sz += s.size();
   }
   sz *= sizeof(char);
   const size_t bytes = sz;
