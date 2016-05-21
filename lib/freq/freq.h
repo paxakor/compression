@@ -1,16 +1,20 @@
 #pragma once
 
 #include <cinttypes>
+#include <experimental/string_view>
+#include <string>
+#include <vector>
 #include "codec/codec.h"
-#include "rm_fr/trie.h"
+#include "freq/trie.h"
 
 namespace Codecs {
 
-class RmFrCodec : public CodecIFace {
-public:
-  RmFrCodec();
-  ~RmFrCodec();
+using std::string;
+using std::vector;
+using std::experimental::string_view;
 
+class FreqCodec : public CodecIFace {
+public:
   void encode(string&, const string_view&) const override;
   void decode(string&, const string_view&) const override;
 
@@ -23,7 +27,7 @@ public:
   void reset() override;
 
 protected:
-
+  Trie::Trie trie;
 };
 
 }  // namespace Codecs
