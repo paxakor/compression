@@ -16,7 +16,7 @@ void select_sample(Container& cont, const Source& src, size_t sample_size) {
 }
 
 void Tester::learn_codec() {
-  std::cout << "Learning" << std::endl;
+  std::cout << "Start learning" << std::endl;
   double start = clock();
   vector<std::experimental::string_view> sample;
   const size_t smpl_sz = this->codec->sample_size(this->data.size());
