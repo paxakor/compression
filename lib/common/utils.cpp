@@ -1,4 +1,8 @@
+// Copyright 2016, Pavel Korozevtsev.
+
 #include <algorithm>
+#include <string>
+#include <vector>
 #include "common/defs.h"
 #include "common/utils.h"
 

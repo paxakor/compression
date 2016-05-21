@@ -1,4 +1,7 @@
+// Copyright 2016, Pavel Korozevtsev.
+
 #include <fstream>
+#include <string>
 #include "tester/config.h"
 #include "common/utils.h"
 

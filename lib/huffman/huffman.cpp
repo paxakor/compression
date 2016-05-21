@@ -1,6 +1,10 @@
+// Copyright 2016, Pavel Korozevtsev.
+
 #include <cmath>
 #include <cstring>
 #include <algorithm>
+#include <string>
+#include <vector>
 #include "common/utils.h"
 #include "huffman/huffman.h"
 
@@ -12,8 +16,7 @@ HuffmanCodec::HuffmanCodec()
   : tree()
   , table(new string*[my256])
   , tree_table(new SmallPair*[my256])
-  , frequency(new size_t[my256])
-{
+  , frequency(new size_t[my256]) {
   for (size_t i = 0; i < my256; ++i) {
     this->table[i] = new string[CHAR_SIZE];
   }
@@ -179,7 +182,7 @@ void HuffmanCodec::build_table() {
   }
 }
 
-void HuffmanCodec::find_all_ways(){
+void HuffmanCodec::find_all_ways() {
   uint8_t ch = 0;
   do {
     uint8_t pos = 0;
