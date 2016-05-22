@@ -25,7 +25,7 @@ size_t get_records_count(const string& file_name) {
   std::ifstream file(file_name, std::ios::binary);
   while (sample_storage.size() < 128 && file.good()) {
     string record;
-    file >> record;
+    std::getline(file, record);
     sample_storage.push_back(record);
   }
   file.close();
@@ -65,7 +65,7 @@ void StreamTester::learn_codec() {
   size_t k = records_count / smpl_sz;
   for (size_t i = 0; sample_storage.size() < smpl_sz && file.good(); ++i) {
     string record;
-    file >> record;
+    std::getline(file, record);
     if (i % k == 0) {
       sample_storage.push_back(record);
     }
@@ -93,7 +93,7 @@ void StreamTester::test_all() const {
   size_t total = 0;
   while (file.good()) {
     string record, encoded, decoded;
-    file >> record;
+    std::getline(file, record);
     this->codec->encode(encoded, record);
     this->codec->decode(decoded, encoded);
     if (decoded != record) {
