@@ -32,7 +32,7 @@ void MultiCodec::encode(string& encoded, const string_view& raw) const {
   } else {
     string* const tmp_str = new string[codecs_count - 1];
     (*(cdc++))->encode(tmp_str[0], raw);
-    for (size_t i = 0; i < codecs_count - 2; ++i) {
+    for (size_t i = 0; i + 2 < codecs_count; ++i) {
       (*(cdc++))->encode(tmp_str[i + 1], tmp_str[i]);
     }
     (*cdc)->encode(encoded, tmp_str[codecs_count - 2]);
@@ -48,7 +48,7 @@ void MultiCodec::decode(string& raw, const string_view& encoded) const {
   } else {
     string* const tmp_str = new string[codecs_count - 1];
     (*(cdc++))->decode(tmp_str[0], encoded);
-    for (size_t i = 0; i < codecs_count - 2; ++i) {
+    for (size_t i = 0; i + 2 < codecs_count; ++i) {
       (*(cdc++))->decode(tmp_str[i + 1], tmp_str[i]);
     }
     (*cdc)->decode(raw, tmp_str[codecs_count - 2]);
