@@ -19,6 +19,24 @@ size_t get_file_size(const string& file_name) {
   return end - begin;
 }
 
+size_t get_records_count(const string& file_name) {
+  auto data_size = get_file_size(file_name);
+  vector<string> sample_storage;
+  std::ifstream file(file_name, std::ios::binary);
+  while (sample_storage.size() < 128 && file.good()) {
+    string record;
+    file >> record;
+    sample_storage.push_back(record);
+  }
+  file.close();
+  size_t record_size = 0;
+  for (const auto rec : sample_storage) {
+    record_size += rec.size();
+  }
+  record_size /= sample_storage.size();
+  return data_size / record_size;
+}
+
 size_t print_size(size_t sz, const string& name) {
   const size_t bytes = sz;
   const size_t mod = 1024;
@@ -40,30 +58,22 @@ void StreamTester::set_data_file(const string& new_data_file) {
 
 void StreamTester::learn_codec() {
   std::cout << "Reading sample from " << this->data_file << std::endl;
-  auto data_size = get_file_size(this->data_file);
+  size_t records_count = get_records_count(this->data_file);
   std::ifstream file(this->data_file, std::ios::binary);
-  constexpr size_t fst_rec_cnt = 4;
+  const size_t smpl_sz = this->codec->sample_size(records_count);
   vector<string> sample_storage;
-  while (sample_storage.size() < fst_rec_cnt && file.good()) {
+  size_t k = records_count / smpl_sz;
+  for (size_t i = 0; sample_storage.size() < smpl_sz && file.good(); ++i) {
     string record;
     file >> record;
-    sample_storage.push_back(record);
-  }
-  size_t record_size = 0;
-  for (const auto rec : sample_storage) {
-    record_size += rec.size();
-  }
-  record_size /= sample_storage.size();
-  const size_t smpl_sz = this->codec->sample_size(data_size / record_size);
-  for (size_t i = 0; i + fst_rec_cnt < smpl_sz && file.good(); ++i) {
-    string record;
-    file >> record;
-    sample_storage.push_back(record);
+    if (i % k == 0) {
+      sample_storage.push_back(record);
+    }
   }
   file.close();
   vector<std::experimental::string_view> sample;
   for (const auto rec : sample_storage) {
-    sample.emplace_back(rec);
+    sample.push_back(rec);
   }
   std::cout << "Read " << sample.size() << " records" << std::endl;
   Stopwatch sw("Learning");

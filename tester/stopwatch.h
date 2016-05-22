@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ctime>
+#include <iostream>
 #include <string>
 
 class Stopwatch {
@@ -23,5 +24,5 @@ public:
 private:
   const std::string name;
   double start;
-  float ended = false;
+  bool ended = false;
 };
