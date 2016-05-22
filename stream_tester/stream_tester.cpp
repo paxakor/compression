@@ -1,12 +1,12 @@
 // Copyright 2016, Pavel Korozevtsev.
 
-#include <ctime>
 #include <experimental/string_view>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 #include "stream_tester/stream_tester.h"
+#include "tester/stopwatch.h"
 
 using std::string;
 using std::vector;
@@ -65,12 +65,9 @@ void StreamTester::learn_codec() {
   for (const auto rec : sample_storage) {
     sample.emplace_back(rec);
   }
-  std::cout << "Sample was read. (" << sample.size() << " records)" << std::endl;
-  std::cout << "Start learning" << std::endl;
-  double start = clock();
+  std::cout << "Read " << sample.size() << " records" << std::endl;
+  Stopwatch sw("Learning");
   this->codec->learn(sample);
-  std::cout << "Learning ended in " << (clock() - start) / CLOCKS_PER_SEC <<
-    " seconds" << std::endl;
 }
 
 void StreamTester::set_codec(Codecs::CodecIFace& codec) {
@@ -78,13 +75,12 @@ void StreamTester::set_codec(Codecs::CodecIFace& codec) {
 }
 
 void StreamTester::test_all() const {
-  std::cout << "Start testing" << std::endl;
+  Stopwatch sw("Testing");
   std::ifstream file(this->data_file, std::ios::binary);
   size_t data_size = 0;
   size_t encoded_size = 0;
   size_t errors = 0;
   size_t total = 0;
-  double start = clock();
   while (file.good()) {
     string record, encoded, decoded;
     file >> record;
@@ -97,8 +93,6 @@ void StreamTester::test_all() const {
     encoded_size += encoded.size();
     ++total;
   }
-  std::cout << "Testing ended in " << (clock() - start) / CLOCKS_PER_SEC <<
-    " seconds" << std::endl;
   std::cout << "Encoded " << total << " records" << std::endl;
   const float a = print_size(data_size,    "data   ");
   const float b = print_size(encoded_size, "encoded");

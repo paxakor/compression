@@ -1,11 +1,12 @@
 // Copyright 2016, Pavel Korozevtsev.
 
 #include <experimental/algorithm>
-#include <ctime>
+#include <experimental/string_view>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
+#include "tester/stopwatch.h"
 #include "tester/tester.h"
 #include "common/utils.h"
 
@@ -16,14 +17,11 @@ void select_sample(Container& cont, const Source& src, size_t sample_size) {
 }
 
 void Tester::learn_codec() {
-  std::cout << "Start learning" << std::endl;
-  double start = clock();
-  vector<std::experimental::string_view> sample;
+  Stopwatch sw("Learning");
+  std::vector<std::experimental::string_view> sample;
   const size_t smpl_sz = this->codec->sample_size(this->data.size());
   select_sample(sample, this->data, smpl_sz);
   this->codec->learn(sample);
-  std::cout << "Learning ended in " << (clock() - start) / CLOCKS_PER_SEC <<
-    " seconds" << std::endl;
 }
 
 void Tester::read_data(const string& data_file) {
@@ -44,30 +42,26 @@ void Tester::set_codec(Codecs::CodecIFace& codec) {
 }
 
 void Tester::test_encode() {
-  std::cout << "Start encoding" << std::endl;
   this->encoded.resize(this->data.size());
   auto iter = this->encoded.begin();
-  double start = clock();
+  Stopwatch sw("Encoding");
   for (const auto& record : this->data) {
     this->codec->encode(*iter, record);
     ++iter;
   }
-  std::cout << "Encoding ended in " << (clock() - start) / CLOCKS_PER_SEC <<
-    " seconds" << std::endl;
+  sw.end();
   shrink_all_strings(this->encoded);
 }
 
 void Tester::test_decode() {
-  std::cout << "Start decoding" << std::endl;
   this->decoded.resize(this->data.size());
   auto iter = this->decoded.begin();
-  double start = clock();
+  Stopwatch sw("Decoding");
   for (const auto& record : this->encoded) {
     this->codec->decode(*iter, record);
     ++iter;
   }
-  std::cout << "Decoding ended in " << (clock() - start) / CLOCKS_PER_SEC <<
-    " seconds" << std::endl;
+  sw.end();
   shrink_all_strings(this->decoded);
 }
 
@@ -99,7 +93,7 @@ void Tester::test_size() const {
   std::cout << "Compressed by " << (1 - b / a) * 100 << "%" << std::endl;
 }
 
-size_t print_size(const vector<string>& vec, const string& name) {
+size_t print_size(const std::vector<string>& vec, const string& name) {
   size_t sz = 0;
   for (const auto& s : vec) {
     sz += s.size();
@@ -107,7 +101,7 @@ size_t print_size(const vector<string>& vec, const string& name) {
   sz *= sizeof(char);
   const size_t bytes = sz;
   const size_t mod = 1024;
-  const vector<string> unit_name = {"B", "KiB", "MiB", "GiB", "TiB", "PiB",
+  const std::vector<string> unit_name = {"B", "KiB", "MiB", "GiB", "TiB", "PiB",
     "EiB", "ZiB", "YiB"};
   size_t i = 0;
   while (sz > mod) {
