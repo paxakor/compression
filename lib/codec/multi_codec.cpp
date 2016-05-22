@@ -10,7 +10,7 @@ MultiCodec::MultiCodec(size_t count, CodecIFace* fst_cdc, ...) {
   this->push(fst_cdc);
   va_list args;
   va_start(args, fst_cdc);
-  for (size_t i = 0; i < count - 1; ++i) {
+  for (size_t i = 0; i + 1 < count; ++i) {
     this->push(va_arg(args, CodecIFace*));
   }
   va_end(args);

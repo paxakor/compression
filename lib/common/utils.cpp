@@ -10,7 +10,7 @@ vector<string> split(const string& str, size_t count, char ch) {
   size_t pos = 0;
   size_t cnt = 0;
   vector<string> res;
-  while (pos < str.size() && (count == 0 || cnt < count - 1)) {
+  while (pos < str.size() && (count == 0 || cnt + 1 < count)) {
     size_t len = 0;
     while ((pos + len) < str.size() && str[pos + len] == ch) {
       ++pos;
