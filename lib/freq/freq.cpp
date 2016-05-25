@@ -18,9 +18,9 @@ void FreqCodec::encode(string& encoded, const string_view& raw) const {
   res.reserve(raw.size());
   uint16_t nd_ptr = 0;
   for (auto ch = raw.begin(); ch != raw.end();) {
-    const auto iter = trie_data[nd_ptr].children.find(static_cast<uint8_t>(*ch));
-    if (iter != trie_data[nd_ptr].children.end()) {
-      nd_ptr = iter->second;
+    const auto iter = trie_data[nd_ptr].children[static_cast<uint8_t>(*ch)];
+    if (iter != 0) {
+      nd_ptr = iter;
       ++ch;
     } else {
       res.push_back(nd_ptr);
@@ -66,7 +66,7 @@ void FreqCodec::load(const string_view& config) {
 
 void FreqCodec::learn(const vector<string_view>& all_samples) {
   constexpr size_t max_cnt = (1 << 16) - my256;
-  constexpr size_t max_len = 6;
+  constexpr size_t max_len = 12;
   Trie::Trie tmp_trie;
   for (size_t idx = 0; idx < all_samples.size(); idx += 2) {
     const auto& sv = all_samples[idx];
@@ -91,14 +91,13 @@ void FreqCodec::learn(const vector<string_view>& all_samples) {
     const auto& sv = all_samples[idx];
     size_t nd_ptr = 0;
     for (auto ch = sv.begin(); ch != sv.end();) {
-      const auto iter = trie_data[nd_ptr].children.find(*ch);
-      if (iter != trie_data[nd_ptr].children.end()) {
+      const auto iter = trie_data[nd_ptr].children[static_cast<uint8_t>(*ch)];
+      if (iter != 0) {
         ++ch;
-        nd_ptr = iter->second;
       } else {
         ++frequency[nd_ptr];
-        nd_ptr = 0;
       }
+      nd_ptr = iter;
     }
   }
   std::vector< std::pair<size_t, size_t> > best_nodes;

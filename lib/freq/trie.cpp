@@ -7,8 +7,12 @@
 
 namespace Trie {
 
+Node::Node()
+  : children(256, 0) {}
+
 Node::Node(size_t p, char ch)
-  : parent(p)
+  : children(256, 0)
+  , parent(p)
   , prev_char(ch) {}
 
 Trie::Trie() {

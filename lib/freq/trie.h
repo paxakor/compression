@@ -9,10 +9,10 @@ namespace Trie {
 
 class Node {
 public:
-  Node() = default;
+  Node();
   Node(size_t, char);
   Node(const Node&) = default;
-  std::unordered_map<char, size_t> children;
+  std::vector<size_t> children;
   size_t parent = 0;
   size_t term = 0;
   char prev_char = 0;
@@ -35,14 +35,14 @@ template <typename Str>
 void Trie::add(const Str& str) {
   size_t node_iter = 0;
   for (const auto& ch : str) {
-    const auto it = this->nodes[node_iter].children.find(ch);
-    if (it == this->nodes[node_iter].children.end()) {
+    const auto it = this->nodes[node_iter].children[static_cast<uint8_t>(ch)];
+    if (it == 0) {
       const size_t sz = this->nodes.size();
       this->nodes.emplace_back(node_iter, ch);
-      this->nodes[node_iter].children.insert({ch, sz});
+      this->nodes[node_iter].children[static_cast<uint8_t>(ch)] = sz;
       node_iter = sz;
     } else {
-      node_iter = it->second;
+      node_iter = it;
     }
     ++(this->nodes[node_iter].term);
   }
@@ -52,12 +52,11 @@ template <typename Str>
 size_t Trie::count(const Str& str) const {
   size_t node_iter = 0;
   for (const auto& ch : str) {
-    const auto it = this->nodes[node_iter].children.find(ch);
-    if (it == this->nodes[node_iter].children.end()) {
+    const auto it = this->nodes[node_iter].children[static_cast<uint8_t>(ch)];
+    if (it == 0) {
       return 0;
-    } else {
-      node_iter = it->second;
     }
+    node_iter = it;
   }
   return this->nodes[node_iter].term;
 }
