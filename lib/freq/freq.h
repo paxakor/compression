@@ -28,6 +28,7 @@ public:
 
 protected:
   Trie::Trie trie;
+  std::vector<std::string> strs;
 };
 
 }  // namespace Codecs
