@@ -48,4 +48,4 @@ const std::string Trie::get_string(size_t nd_ptr) const {
   return res;
 }
 
-} // namespace Trie
+}  // namespace Trie

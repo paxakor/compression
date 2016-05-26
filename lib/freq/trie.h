@@ -1,3 +1,5 @@
+// Copyright 2016, Pavel Korozevtsev.
+
 #pragma once
 
 #include <string>
@@ -29,7 +31,7 @@ protected:
   std::vector<Node> nodes;
 };
 
-template <typename Str> 
+template <typename Str>
 void Trie::add(const Str& str) {
   size_t node_iter = 0;
   for (const auto& ch : str) {
@@ -46,7 +48,7 @@ void Trie::add(const Str& str) {
   }
 }
 
-template <typename Str> 
+template <typename Str>
 size_t Trie::count(const Str& str) const {
   size_t node_iter = 0;
   for (const auto& ch : str) {
@@ -59,4 +61,4 @@ size_t Trie::count(const Str& str) const {
   return this->nodes[node_iter].term;
 }
 
-} // namespace Trie
+}  // namespace Trie

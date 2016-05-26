@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cstring>
 #include <algorithm>
+#include <functional>
+#include <string>
 #include <utility>
 #include <vector>
 #include "lib/common/defs.h"

@@ -1,3 +1,5 @@
+// Copyright 2016, Pavel Korozevtsev.
+
 #pragma once
 
 #include <exception>
@@ -50,4 +52,4 @@ public:
   virtual void reset() = 0;
 };
 
-}
+}  // namespace Codecs

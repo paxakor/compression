@@ -1,8 +1,14 @@
+// Copyright 2016, Pavel Korozevtsev.
+
 #pragma once
 
 #include <cinttypes>
+#include <functional>
 #include <queue>
+#include <string>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 #include "lib/codec/codec.h"
 #include "lib/common/defs.h"
 #include "lib/huffman/tree.h"

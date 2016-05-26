@@ -1,3 +1,5 @@
+// Copyright 2016, Pavel Korozevtsev.
+
 #pragma once
 
 #include <string>
@@ -7,7 +9,7 @@ namespace Help {
 using std::string;
 
 const string help_message(const string& name) {
-  string msg = 
+  string msg =
 R"(Usage: )" + name + R"( [option] [FILE]
 Options:
   --help      print this message and exit
@@ -15,4 +17,4 @@ Options:
   return msg;
 }
 
-}
+}  // namespace Help

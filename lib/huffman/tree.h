@@ -1,11 +1,14 @@
+// Copyright 2016, Pavel Korozevtsev.
+
 #pragma once
 
 #include <vector>
+#include <utility>
 
 class Node {
 public:
   Node();
-  Node(char);
+  explicit Node(char);
   Node(size_t, size_t);
   Node(const Node&);
 

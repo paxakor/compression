@@ -1,3 +1,5 @@
+// Copyright 2016, Pavel Korozevtsev.
+
 #pragma once
 
 #include <ctime>
@@ -6,7 +8,7 @@
 
 class Stopwatch {
 public:
-  Stopwatch(const std::string& new_name)
+  explicit Stopwatch(const std::string& new_name)
   : name(new_name)
   , start(clock()) {
     std::cout << "Start " << name << std::endl;

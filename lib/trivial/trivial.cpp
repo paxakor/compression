@@ -1,6 +1,7 @@
 // Copyright 2016, Pavel Korozevtsev.
 
 #include <string>
+#include <vector>
 #include "lib/trivial/trivial.h"
 
 namespace Codecs {

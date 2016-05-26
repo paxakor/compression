@@ -1,5 +1,8 @@
+// Copyright 2016, Pavel Korozevtsev.
+
 #include <cstdarg>
 #include <cstring>
+#include <algorithm>
 #include <string>
 #include <vector>
 #include "lib/codec/multi_codec.h"
@@ -57,7 +60,7 @@ void MultiCodec::decode(string& raw, const string_view& encoded) const {
 }
 
 string MultiCodec::save() const {
-  static const auto cnt = sizeof(size_t);
+  constexpr auto cnt = sizeof(size_t);
   string data;
   for_each_codec([&](CodecIFace* cdc) {
     const auto tmp = cdc->save();
@@ -111,4 +114,4 @@ void MultiCodec::reset() {
   });
 }
 
-} // namespace Codecs
+}  // namespace Codecs

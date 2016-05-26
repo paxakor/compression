@@ -1,5 +1,9 @@
+// Copyright 2016, Pavel Korozevtsev.
+
 #pragma once
 
+#include <string>
+#include <vector>
 #include "lib/codec/codec.h"
 
 namespace Codecs {
