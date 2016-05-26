@@ -9,10 +9,8 @@ include_directories(${CMAKE_SOURCE_DIR}/lib)
 include_directories(${CMAKE_SOURCE_DIR})
 
 set(SOURCES
-  config.cpp
   main.cpp
   tester.cpp)
 
 add_executable(tester ${SOURCES})
 target_link_libraries(tester codec)
-file(COPY tester.conf DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")

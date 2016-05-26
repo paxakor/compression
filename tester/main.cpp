@@ -1,25 +1,32 @@
 // Copyright 2016, Pavel Korozevtsev.
 
 #include "codec/multi_codec.h"
-#include "common/utils.h"
 #include "freq/freq.h"
 #include "huffman/huffman.h"
 #include "trivial/trivial.h"
-#include "tester/config.h"
-#include "tester/tester.h"
+#include "tester/help.h"
 #include "tester/stopwatch.h"
+#include "tester/tester.h"
 
-int main() {
+int main(int argc, char const *argv[]) {
+  std::string file_name("/tmp/data1");
+  if (argc > 1) {
+    std::string arg(argv[1]);
+    if (arg == "--help" || arg == "-h") {
+      std::cout << Help::help_message << std::endl;
+      return 0;
+    } else {
+      file_name = arg;
+    }
+  }
   Stopwatch sw("Program");
-  Config conf;
-  conf.read();
   Codecs::HuffmanCodec huffman;
   Codecs::FreqCodec freq;
   Codecs::TrivialCodec triv;
   Codecs::MultiCodec main_codec(2, &freq, &huffman);
   Tester tester;
   tester.set_codec(main_codec);
-  tester.read_data(conf["data_file"]);
+  tester.read_data(file_name);
   tester.learn_codec();
   tester.test_encode();
 #if 0
