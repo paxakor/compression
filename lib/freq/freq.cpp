@@ -107,7 +107,7 @@ void FreqCodec::learn(const vector<string_view>& all_samples) {
     }
   }
   std::sort(best_nodes.begin(), best_nodes.end(),
-    std::greater< std::pair<size_t, size_t> >());
+    std::greater< decltype(best_nodes)::value_type >());
 
   for (size_t i = 0; i < best_nodes.size() && i < max_cnt &&
     this->trie.data().size() < max_cnt; ++i) {
@@ -122,9 +122,10 @@ void FreqCodec::learn(const vector<string_view>& all_samples) {
 }
 
 size_t FreqCodec::sample_size(size_t records_total) const {
-  const size_t min_size = 1;
-  const size_t n = ceil(pow(log2(records_total), 2));  // don't know why
-  return std::max(min_size, n);
+  constexpr size_t min_size = 16;
+  constexpr size_t max_size = 1e6;
+  const size_t n = ceil(log2(records_total));  // don't know why
+  return std::min(std::max(min_size, n), max_size);
 }
 
 void FreqCodec::reset() {

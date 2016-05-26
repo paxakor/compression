@@ -121,9 +121,10 @@ void HuffmanCodec::learn(const vector<string_view>& all_samples) {
 }
 
 size_t HuffmanCodec::sample_size(size_t records_total) const {
-  const size_t min_size = 1;
-  const size_t n = ceil(pow(log2(records_total), 2));  // don't know why
-  return std::max(min_size, n);
+  constexpr size_t min_size = 16;
+  constexpr size_t max_size = 1e6;
+  const size_t n = ceil(log2(records_total));  // don't know why
+  return std::min(std::max(min_size, n), max_size);
 }
 
 void HuffmanCodec::reset() {
