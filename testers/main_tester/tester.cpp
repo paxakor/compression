@@ -1,6 +1,5 @@
 // Copyright 2016, Pavel Korozevtsev.
 
-#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -8,6 +7,7 @@
 #include <experimental/string_view>
 #include "lib/common/utils.h"
 #include "testers/main_tester/tester.h"
+#include "testers/reader.h"
 #include "testers/stopwatch.h"
 
 template <typename Container, typename Source>
@@ -26,10 +26,10 @@ void Tester::learn_codec() {
 
 void Tester::read_data(const string& data_file) {
   std::cout << "Reading data from " << data_file << std::endl;
-  std::ifstream input(data_file);
+  Reader input(data_file, true);
   while (input.good()) {
     string record;
-    std::getline(input, record);
+    input.get(record);
     this->data.push_back(record);
   }
   input.close();

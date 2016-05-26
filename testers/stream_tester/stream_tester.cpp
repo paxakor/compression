@@ -6,6 +6,7 @@
 #include <vector>
 #include <experimental/string_view>
 #include "testers/stream_tester/stream_tester.h"
+#include "testers/reader.h"
 #include "testers/stopwatch.h"
 
 using std::string;
@@ -22,13 +23,13 @@ size_t get_file_size(const string& file_name) {
 size_t get_records_count(const string& file_name) {
   auto data_size = get_file_size(file_name);
   vector<string> sample_storage;
-  std::ifstream file(file_name, std::ios::binary);
-  while (sample_storage.size() < 128 && file.good()) {
+  Reader input(file_name, true);
+  while (sample_storage.size() < 128 && input.good()) {
     string record;
-    std::getline(file, record);
+    input.get(record);
     sample_storage.push_back(record);
   }
-  file.close();
+  input.close();
   size_t record_size = 0;
   for (const auto rec : sample_storage) {
     record_size += rec.size();
@@ -59,18 +60,18 @@ void StreamTester::set_data_file(const string& new_data_file) {
 void StreamTester::learn_codec() {
   std::cout << "Reading sample from " << this->data_file << std::endl;
   size_t records_count = get_records_count(this->data_file);
-  std::ifstream file(this->data_file, std::ios::binary);
+  Reader input(this->data_file, true);
   const size_t smpl_sz = this->codec->sample_size(records_count);
   vector<string> sample_storage;
   size_t k = records_count / smpl_sz;
-  for (size_t i = 0; sample_storage.size() < smpl_sz && file.good(); ++i) {
+  for (size_t i = 0; sample_storage.size() < smpl_sz && input.good(); ++i) {
     string record;
-    std::getline(file, record);
+    input.get(record);
     if (i % k == 0) {
       sample_storage.push_back(record);
     }
   }
-  file.close();
+  input.close();
   vector<std::experimental::string_view> sample;
   for (const auto rec : sample_storage) {
     sample.push_back(rec);
