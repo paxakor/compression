@@ -6,9 +6,9 @@
 #include <algorithm>
 #include <utility>
 #include <vector>
-#include "common/defs.h"
-#include "freq/freq.h"
-#include "freq/trie.h"
+#include "lib/common/defs.h"
+#include "lib/freq/freq.h"
+#include "lib/freq/trie.h"
 
 namespace Codecs {
 

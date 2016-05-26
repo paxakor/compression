@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "codec/codec.h"
+#include "lib/codec/codec.h"
 
 using std::string;
 using std::vector;

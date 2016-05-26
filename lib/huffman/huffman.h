@@ -3,9 +3,9 @@
 #include <cinttypes>
 #include <queue>
 #include <unordered_map>
-#include "codec/codec.h"
-#include "common/defs.h"
-#include "huffman/tree.h"
+#include "lib/codec/codec.h"
+#include "lib/common/defs.h"
+#include "lib/huffman/tree.h"
 
 namespace Codecs {
 

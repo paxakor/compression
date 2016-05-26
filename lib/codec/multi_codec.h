@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include "codec/codec.h"
+#include "lib/codec/codec.h"
 
 namespace Codecs {
 

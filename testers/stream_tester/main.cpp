@@ -1,25 +1,24 @@
 // Copyright 2016, Pavel Korozevtsev.
 
 #include <string>
-#include "codec/multi_codec.h"
-#include "freq/freq.h"
-#include "huffman/huffman.h"
-#include "stream_tester/help.h"
-#include "stream_tester/stream_tester.h"
-#include "tester/stopwatch.h"
-#include "trivial/trivial.h"
+#include "lib/codec/multi_codec.h"
+#include "lib/freq/freq.h"
+#include "lib/huffman/huffman.h"
+#include "lib/trivial/trivial.h"
+#include "testers/help.h"
+#include "testers/stopwatch.h"
+#include "testers/stream_tester/stream_tester.h"
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char const* argv[]) {
   Stopwatch sw("Program");
   std::string file_name("/tmp/data1");
   if (argc > 1) {
     std::string arg(argv[1]);
     if (arg == "--help" || arg == "-h") {
-      std::cout << Help::help_message << std::endl;
+      std::cout << Help::help_message("stream_tester") << std::endl;
       return 0;
-    } else {
-      file_name = arg;
     }
+    file_name = arg;
   }
   Codecs::HuffmanCodec huffman;
   Codecs::FreqCodec freq;

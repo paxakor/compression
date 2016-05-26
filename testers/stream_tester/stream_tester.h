@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "codec/codec.h"
+#include "lib/codec/codec.h"
 
 class StreamTester {
 public:

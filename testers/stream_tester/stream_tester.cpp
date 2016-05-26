@@ -1,12 +1,12 @@
 // Copyright 2016, Pavel Korozevtsev.
 
-#include <experimental/string_view>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-#include "stream_tester/stream_tester.h"
-#include "tester/stopwatch.h"
+#include <experimental/string_view>
+#include "testers/stream_tester/stream_tester.h"
+#include "testers/stopwatch.h"
 
 using std::string;
 using std::vector;

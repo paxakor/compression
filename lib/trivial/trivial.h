@@ -1,6 +1,6 @@
 #pragma once
 
-#include "codec/codec.h"
+#include "lib/codec/codec.h"
 
 namespace Codecs {
 

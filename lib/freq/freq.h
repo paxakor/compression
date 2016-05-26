@@ -1,11 +1,11 @@
 #pragma once
 
 #include <cinttypes>
-#include <experimental/string_view>
 #include <string>
 #include <vector>
-#include "codec/codec.h"
-#include "freq/trie.h"
+#include <experimental/string_view>
+#include "lib/codec/codec.h"
+#include "lib/freq/trie.h"
 
 namespace Codecs {
 

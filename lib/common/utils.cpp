@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include "common/defs.h"
-#include "common/utils.h"
+#include "lib/common/defs.h"
+#include "lib/common/utils.h"
 
 vector<string> split(const string& str, size_t count, char ch) {
   size_t pos = 0;

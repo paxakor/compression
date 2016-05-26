@@ -1,11 +1,11 @@
 // Copyright 2016, Pavel Korozevtsev.
 
 #include <algorithm>
-#include <vector>
 #include <utility>
-#include "common/defs.h"
-#include "common/utils.h"
-#include "huffman/tree.h"
+#include <vector>
+#include "lib/common/defs.h"
+#include "lib/common/utils.h"
+#include "lib/huffman/tree.h"
 
 Node::Node()
   : is_leaf(false)

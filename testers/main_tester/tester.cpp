@@ -1,14 +1,14 @@
 // Copyright 2016, Pavel Korozevtsev.
 
-#include <experimental/algorithm>
-#include <experimental/string_view>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-#include "tester/stopwatch.h"
-#include "tester/tester.h"
-#include "common/utils.h"
+#include <experimental/algorithm>
+#include <experimental/string_view>
+#include "lib/common/utils.h"
+#include "testers/main_tester/tester.h"
+#include "testers/stopwatch.h"
 
 template <typename Container, typename Source>
 void select_sample(Container& cont, const Source& src, size_t sample_size) {

@@ -1,9 +1,7 @@
 #pragma once
 
-#include <cstddef>
-#include <vector>
 #include <string>
-#include <unordered_map>
+#include <vector>
 
 namespace Trie {
 

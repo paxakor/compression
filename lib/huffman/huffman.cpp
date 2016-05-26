@@ -5,8 +5,8 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include "common/utils.h"
-#include "huffman/huffman.h"
+#include "lib/common/utils.h"
+#include "lib/huffman/huffman.h"
 
 namespace Codecs {
 

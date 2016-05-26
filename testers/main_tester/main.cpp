@@ -1,19 +1,21 @@
 // Copyright 2016, Pavel Korozevtsev.
 
-#include "codec/multi_codec.h"
-#include "freq/freq.h"
-#include "huffman/huffman.h"
-#include "trivial/trivial.h"
-#include "tester/help.h"
-#include "tester/stopwatch.h"
-#include "tester/tester.h"
+#include <iostream>
+#include <string>
+#include "lib/codec/multi_codec.h"
+#include "lib/freq/freq.h"
+#include "lib/huffman/huffman.h"
+#include "lib/trivial/trivial.h"
+#include "testers/help.h"
+#include "testers/main_tester/tester.h"
+#include "testers/stopwatch.h"
 
 int main(int argc, char const *argv[]) {
   std::string file_name("/tmp/data1");
   if (argc > 1) {
     std::string arg(argv[1]);
     if (arg == "--help" || arg == "-h") {
-      std::cout << Help::help_message << std::endl;
+      std::cout << Help::help_message("tester") << std::endl;
       return 0;
     } else {
       file_name = arg;
