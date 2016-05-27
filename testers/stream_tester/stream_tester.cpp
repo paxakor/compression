@@ -20,10 +20,10 @@ size_t get_file_size(const string& file_name) {
   return end - begin;
 }
 
-size_t get_records_count(const string& file_name) {
+size_t get_records_count(const string& file_name, bool read_block) {
   auto data_size = get_file_size(file_name);
   vector<string> sample_storage;
-  Reader input(file_name, true);
+  Reader input(file_name, read_block);
   while (sample_storage.size() < 128 && input.good()) {
     string record;
     input.get(record);
@@ -53,14 +53,15 @@ size_t print_size(size_t sz, const string& name) {
   return bytes;
 }
 
-void StreamTester::set_data_file(const string& new_data_file) {
+void StreamTester::set_data_file(const string& new_data_file, bool type) {
   this->data_file = new_data_file;
+  this->read_block = type;
 }
 
 void StreamTester::learn_codec() {
   std::cout << "Reading sample from " << this->data_file << std::endl;
-  size_t records_count = get_records_count(this->data_file);
-  Reader input(this->data_file, true);
+  size_t records_count = get_records_count(this->data_file, this->read_block);
+  Reader input(this->data_file, this->read_block);
   const size_t smpl_sz = this->codec->sample_size(records_count);
   vector<string> sample_storage;
   size_t k = records_count / smpl_sz;

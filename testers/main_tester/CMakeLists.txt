@@ -9,7 +9,8 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 set(SOURCES
   main.cpp
-  tester.cpp)
+  tester.cpp
+  ../args_helper.cpp)
 
 add_executable(tester ${SOURCES})
 target_link_libraries(tester codec)

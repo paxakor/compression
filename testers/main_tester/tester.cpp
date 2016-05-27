@@ -24,9 +24,9 @@ void Tester::learn_codec() {
   this->codec->learn(sample);
 }
 
-void Tester::read_data(const string& data_file) {
+void Tester::read_data(const string& data_file, bool type) {
   std::cout << "Reading data from " << data_file << std::endl;
-  Reader input(data_file, true);
+  Reader input(data_file, type);
   while (input.good()) {
     string record;
     input.get(record);

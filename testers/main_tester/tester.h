@@ -12,7 +12,7 @@ using std::vector;
 class Tester {
 public:
   void learn_codec();
-  void read_data(const string&);
+  void read_data(const string&, bool);
   void set_codec(Codecs::CodecIFace&);
   void test_correctness() const;
   void test_decode();

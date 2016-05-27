@@ -9,7 +9,8 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 set(SOURCES
   main.cpp
-  stream_tester.cpp)
+  stream_tester.cpp
+  ../args_helper.cpp)
 
 add_executable(stream_tester ${SOURCES})
 target_link_libraries(stream_tester codec)

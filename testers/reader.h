@@ -9,14 +9,14 @@
 class Reader {
 public:
   Reader(const std::string& file_name, bool type)
-    : _type(type)
+    : _read_blocks(type)
     , _file(file_name, std::ios::binary) { }
 
   ssize_t get(std::string& str) {
     if (!_file.good()) {
       return -1;
     }
-    if (_type) {
+    if (!_read_blocks) {
       std::getline(_file, str);
     } else {
       uint32_t sz = 0;
@@ -36,6 +36,6 @@ public:
   }
 
 private:
-  const bool _type;
+  const bool _read_blocks;
   std::ifstream _file;
 };
