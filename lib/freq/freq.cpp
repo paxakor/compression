@@ -17,11 +17,13 @@ namespace Codecs {
 FreqCodec::FreqCodec(size_t p)
   : power(p) { }
 
+using IndexType = uint16_t;
+
 void FreqCodec::encode(string& encoded, const string_view& raw) const {
   const auto& trie_data = this->trie.data();
-  std::vector<uint16_t> res;
+  std::vector<IndexType> res;
   res.reserve(raw.size());
-  uint16_t nd_ptr = 0;
+  IndexType nd_ptr = 0;
   for (auto ch = raw.begin(); ch != raw.end();) {
     const auto iter = trie_data[nd_ptr].children[static_cast<uint8_t>(*ch)];
     if (iter != 0) {
@@ -35,14 +37,14 @@ void FreqCodec::encode(string& encoded, const string_view& raw) const {
   if (nd_ptr != 0) {
     res.push_back(nd_ptr);
   }
-  const size_t sz = res.size() * sizeof(uint16_t);
+  const size_t sz = res.size() * sizeof(IndexType);
   encoded.resize(sz);
   memcpy(const_cast<char*>(encoded.data()), res.data(), sz);
 }
 
 void FreqCodec::decode(string& raw, const string_view& encoded) const {
-  std::vector<uint16_t> res(encoded.size() / sizeof(uint16_t));
-  memcpy(const_cast<uint16_t*>(res.data()), encoded.data(), encoded.size());
+  std::vector<IndexType> res(encoded.size() / sizeof(IndexType));
+  memcpy(const_cast<IndexType*>(res.data()), encoded.data(), encoded.size());
   raw.reserve(encoded.size() * 4);
   for (const auto& nd : res) {
     raw += this->strs[nd];
@@ -101,7 +103,7 @@ void FreqCodec::learn(const vector<string_view>& all_samples) {
   std::sort(best_nodes.begin(), best_nodes.end(),
     std::greater< decltype(best_nodes)::value_type >());
 
-  for (size_t i = 0; i < best_nodes.size() && i < max_cnt &&
+  for (size_t i = 0; i < best_nodes.size() &&
     this->trie.data().size() < max_cnt; ++i) {
     this->trie.add(tmp_trie.get_string(best_nodes[i].second));
   }

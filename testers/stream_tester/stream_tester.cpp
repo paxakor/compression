@@ -61,10 +61,10 @@ void StreamTester::set_data_file(const string& new_data_file, bool type) {
 void StreamTester::learn_codec() {
   std::cout << "Reading sample from " << this->data_file << std::endl;
   size_t records_count = get_records_count(this->data_file, this->read_block);
-  Reader input(this->data_file, this->read_block);
   const size_t smpl_sz = this->codec->sample_size(records_count);
-  vector<string> sample_storage;
   size_t k = records_count / smpl_sz;
+  vector<string> sample_storage;
+  Reader input(this->data_file, this->read_block);
   for (size_t i = 0; sample_storage.size() < smpl_sz && input.good(); ++i) {
     string record;
     input.get(record);

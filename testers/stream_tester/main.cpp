@@ -9,11 +9,11 @@
 #include "testers/stream_tester/stream_tester.h"
 
 int main(int argc, char const* argv[]) {
-  Stopwatch sw("Program");
   auto args = parse(argc, argv);
   if (args.exit) {
     return args.exit + 1;
   }
+  Stopwatch sw("Program");
   Codecs::HuffmanCodec huffman;
   Codecs::FreqCodec freq(args.power);
   Codecs::TrivialCodec triv;
