@@ -48,7 +48,7 @@ protected:
   string** table;
   SmallPair** tree_table;
   size_t* frequency;
-  static const size_t fr_sz = my256 * sizeof(size_t);
+  static constexpr size_t fr_sz = my256 * sizeof(size_t);
 };
 
 }  // namespace Codecs

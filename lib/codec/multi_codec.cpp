@@ -60,28 +60,32 @@ void MultiCodec::decode(string& raw, const string_view& encoded) const {
 }
 
 string MultiCodec::save() const {
-  constexpr auto cnt = sizeof(size_t);
+  constexpr auto num_sz = sizeof(size_t);
   string data;
   for_each_codec([&](CodecIFace* cdc) {
-    const auto tmp = cdc->save();
-    const size_t saved_size = tmp.size();
-    char len[cnt];
-    memcpy(len, &saved_size, cnt);
-    data.insert(data.end(), len, len + cnt);
-    data.insert(data.end(), tmp.begin(), tmp.end());
+    const auto saved = cdc->save();
+    const size_t saved_size = saved.size();
+    char len[num_sz];
+    memcpy(len, &saved_size, num_sz);
+    data.insert(data.end(), len, len + num_sz);
+    if (saved_size > 0) {
+      data.insert(data.end(), saved.begin(), saved.end());
+    }
   });
   return data;
 }
 
 void MultiCodec::load(const string_view& config) {
-  static const auto cnt = sizeof(size_t);
+  constexpr auto num_sz = sizeof(size_t);
   size_t already_read = 0;
   for_each_codec([&](CodecIFace* cdc) {
-    size_t new_size;
-    memcpy(&new_size, &config[already_read], cnt);
-    already_read += cnt;
-    cdc->load(config.substr(already_read, new_size));
-    already_read += new_size;
+    if (already_read + num_sz < config.size()) {
+      size_t new_size = 0;
+      memcpy(&new_size, &config[already_read], num_sz);
+      already_read += num_sz;
+      cdc->load(config.substr(already_read, new_size));
+      already_read += new_size;
+    }
   });
 }
 

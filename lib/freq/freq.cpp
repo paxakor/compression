@@ -43,27 +43,14 @@ void FreqCodec::encode(string& encoded, const string_view& raw) const {
 void FreqCodec::decode(string& raw, const string_view& encoded) const {
   std::vector<uint16_t> res(encoded.size() / sizeof(uint16_t));
   memcpy(const_cast<uint16_t*>(res.data()), encoded.data(), encoded.size());
-#if 1
   raw.reserve(encoded.size() * 4);
   for (const auto& nd : res) {
     raw += this->strs[nd];
   }
-#else
-  std::vector<const std::string*> parts;
-  parts.reserve(res.size());
-  size_t raw_sz = 0;
-  for (const auto& nd : res) {
-    parts.push_back(&(this->strs[nd]));
-    raw_sz += this->strs[nd].size();
-  }
-  raw.reserve(raw_sz);
-  for (const auto& ptr : parts) {
-    raw.append(*ptr);
-  }
-#endif
 }
 
 string FreqCodec::save() const {
+  return "";
 }
 
 void FreqCodec::load(const string_view& config) {

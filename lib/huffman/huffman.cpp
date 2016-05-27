@@ -74,7 +74,7 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
   const size_t rest = ((encoded[0] >> (CHAR_SIZE - log_char_size)) &
     ((1 << log_char_size) - 1));
   const size_t size = (encoded.size() - 1) * CHAR_SIZE + rest;
-  const Node* const tree_ptr = &this->tree.front();
+  const auto tree_ptr = this->tree.data();
   auto index = encoded.begin();
   auto iter = log_char_size;
   uint8_t ch = *index << iter;
