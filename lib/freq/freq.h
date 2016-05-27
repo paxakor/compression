@@ -17,6 +17,8 @@ using std::experimental::string_view;
 
 class FreqCodec : public CodecIFace {
 public:
+  FreqCodec(size_t);
+
   void encode(string&, const string_view&) const override;
   void decode(string&, const string_view&) const override;
 
@@ -31,6 +33,7 @@ public:
 protected:
   Trie::Trie trie;
   std::vector<std::string> strs;
+  const size_t power;
 };
 
 }  // namespace Codecs

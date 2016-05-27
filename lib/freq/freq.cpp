@@ -14,6 +14,9 @@
 
 namespace Codecs {
 
+FreqCodec::FreqCodec(size_t p)
+  : power(p) { }
+
 void FreqCodec::encode(string& encoded, const string_view& raw) const {
   const auto& trie_data = this->trie.data();
   std::vector<uint16_t> res;
@@ -22,8 +25,8 @@ void FreqCodec::encode(string& encoded, const string_view& raw) const {
   for (auto ch = raw.begin(); ch != raw.end();) {
     const auto iter = trie_data[nd_ptr].children[static_cast<uint8_t>(*ch)];
     if (iter != 0) {
-      nd_ptr = iter;
       ++ch;
+      nd_ptr = iter;
     } else {
       res.push_back(nd_ptr);
       nd_ptr = 0;
@@ -67,8 +70,8 @@ void FreqCodec::load(const string_view& config) {
 }
 
 void FreqCodec::learn(const vector<string_view>& all_samples) {
-  constexpr size_t max_cnt = (1 << 16) - my256;
-  constexpr size_t max_len = 12;
+  const size_t max_len = 16.0 * ((this->power + 1.0) / 10.0);
+  const size_t max_cnt = (1 << (8 + max_len / 2)) - my256;
   Trie::Trie tmp_trie;
   for (size_t idx = 0; idx < all_samples.size(); idx += 2) {
     const auto& sv = all_samples[idx];
@@ -125,9 +128,9 @@ void FreqCodec::learn(const vector<string_view>& all_samples) {
 
 size_t FreqCodec::sample_size(size_t records_total) const {
   constexpr size_t min_size = 16;
-  constexpr size_t max_size = 1e6;
-  const size_t n = ceil(log2(records_total));  // don't know why
-  return std::min(std::max(min_size, n), max_size);
+  constexpr size_t max_size = 1e5;
+  const size_t n = ceil(sqrt(records_total) / log2(records_total));
+  return std::min(std::max(min_size, n), max_size) * this->power;
 }
 
 void FreqCodec::reset() {
