@@ -28,14 +28,13 @@ matrix:
 #   - cd ..
 
 script:
-  - echo "data_file data" > tester/tester.conf
   - mkdir build
   - cd build
   - cmake ..
   - make
-  - cd tester
+  - cd testers
   - dd if=/dev/urandom of=./data bs=8M count=4
-  - ./tester
+  - ./main_tester/tester -9 -s ./data
 
 notifications:
   email: false
