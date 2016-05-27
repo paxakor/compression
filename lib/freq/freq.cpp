@@ -119,7 +119,8 @@ size_t FreqCodec::sample_size(size_t records_total) const {
   constexpr size_t min_size = 16;
   constexpr size_t max_size = 1e5;
   const size_t n = ceil(sqrt(records_total) / log2(records_total));
-  return std::min(std::max(min_size, n), max_size) * this->power;
+  return std::min(std::min(std::max(min_size, n),
+    max_size) * this->power, records_total);
 }
 
 void FreqCodec::reset() {

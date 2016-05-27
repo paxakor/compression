@@ -124,7 +124,7 @@ size_t HuffmanCodec::sample_size(size_t records_total) const {
   constexpr size_t min_size = 16;
   constexpr size_t max_size = 1e6;
   const size_t n = ceil(log2(records_total));  // don't know why
-  return std::min(std::max(min_size, n), max_size);
+  return std::min(std::min(std::max(min_size, n), max_size), records_total);
 }
 
 void HuffmanCodec::reset() {
