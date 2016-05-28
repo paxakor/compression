@@ -5,5 +5,6 @@
 #include <climits>
 #include <cstddef>
 
-const size_t CHAR_SIZE = sizeof(char) * CHAR_BIT;
+using CharT = char;
+const size_t CHAR_SIZE = sizeof(CharT) * CHAR_BIT;
 const size_t my256 = static_cast<size_t>(1) << CHAR_SIZE;

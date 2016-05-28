@@ -4,11 +4,12 @@
 
 #include <vector>
 #include <utility>
+#include "lib/common/defs.h"
 
 class Node {
 public:
   Node();
-  explicit Node(char);
+  explicit Node(CharT);
   Node(size_t, size_t);
   Node(const Node&);
 
@@ -17,12 +18,12 @@ public:
   size_t parent;
   size_t child_l;
   size_t child_r;
-  char sym;
+  CharT sym;
 };
 
 class Tree : public std::vector<Node> {
 public:
   size_t add_node(const Node&);
   std::vector<bool> get_code(size_t) const;
-  std::pair<uint8_t, uint16_t> find_way(char, size_t) const;
+  std::pair<uint8_t, uint16_t> find_way(CharT, size_t) const;
 };
