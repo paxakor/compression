@@ -23,7 +23,7 @@ int main(int argc, char const* argv[]) {
   tester.read_data(args.file_name, args.read_block);
   tester.learn_codec();
   tester.test_encode();
-#if 0
+#if 1
   const auto state = main_codec.save();
   main_codec.reset();
   main_codec.load(state);

@@ -31,8 +31,10 @@ public:
   void reset() override;
 
 protected:
+  void build_trie();
   Trie::Trie trie;
   std::vector<std::string> strs;
+  std::vector<std::string> strs_for_build;
   const size_t power;
 };
 

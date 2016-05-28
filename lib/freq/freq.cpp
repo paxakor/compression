@@ -52,10 +52,22 @@ void FreqCodec::decode(string& raw, const string_view& encoded) const {
 }
 
 string FreqCodec::save() const {
-  return "";
+  string res;
+  for (const auto& s : this->strs_for_build) {
+    res.push_back(static_cast<uint8_t>(s.size()));
+    res += s;
+  }
+  return res;
 }
 
 void FreqCodec::load(const string_view& config) {
+  size_t i = 0;
+  while (i < config.size()) {
+    uint8_t sz = config[i++];
+    this->strs_for_build.push_back(config.substr(i, sz).to_string());
+    i += sz;
+  }
+  this->build_trie();
 }
 
 void FreqCodec::learn(const vector<string_view>& all_samples) {
@@ -105,10 +117,16 @@ void FreqCodec::learn(const vector<string_view>& all_samples) {
 
   for (size_t i = 0; i < best_nodes.size() &&
     this->trie.data().size() < max_cnt; ++i) {
-    this->trie.add(tmp_trie.get_string(best_nodes[i].second));
+    this->strs_for_build.push_back(tmp_trie.get_string(best_nodes[i].second));
+  }
+  this->build_trie();
+}
+
+void FreqCodec::build_trie() {
+  for (const auto& s : this->strs_for_build) {
+    this->trie.add(s);
   }
   this->trie.add_all_chars();
-
   this->strs.resize(this->trie.data().size());
   for (size_t i = 0; i < strs.size(); ++i) {
     this->strs[i] = this->trie.get_string(i);
@@ -124,6 +142,9 @@ size_t FreqCodec::sample_size(size_t records_total) const {
 }
 
 void FreqCodec::reset() {
+  this->trie.clear();
+  this->strs.clear();
+  this->strs_for_build.clear();
 }
 
 }  // namespace Codecs
