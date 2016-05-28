@@ -60,9 +60,10 @@ void StreamTester::set_data_file(const string& new_data_file, bool type) {
 
 void StreamTester::learn_codec() {
   std::cout << "Reading sample from " << this->data_file << std::endl;
-  size_t records_count = get_records_count(this->data_file, this->read_block);
+  const size_t records_count =
+    get_records_count(this->data_file, this->read_block);
   const size_t smpl_sz = this->codec->sample_size(records_count);
-  size_t k = records_count / smpl_sz;
+  const size_t k = records_count / smpl_sz;
   vector<string> sample_storage;
   Reader input(this->data_file, this->read_block);
   for (size_t i = 0; sample_storage.size() < smpl_sz && input.good(); ++i) {
@@ -73,11 +74,8 @@ void StreamTester::learn_codec() {
     }
   }
   input.close();
-  vector<std::experimental::string_view> sample;
-  for (const auto rec : sample_storage) {
-    sample.push_back(rec);
-  }
-  std::cout << "Read " << sample.size() << " records" << std::endl;
+  vector<std::experimental::string_view> sample(sample_storage.begin(),
+    sample_storage.end());
   Stopwatch sw("Learning");
   this->codec->learn(sample);
 }
@@ -88,14 +86,14 @@ void StreamTester::set_codec(Codecs::CodecIFace& codec) {
 
 void StreamTester::test_all() const {
   Stopwatch sw("Testing");
-  std::ifstream file(this->data_file, std::ios::binary);
+  Reader input(this->data_file, this->read_block);
   size_t data_size = 0;
   size_t encoded_size = 0;
   size_t errors = 0;
   size_t total = 0;
-  while (file.good()) {
+  while (input.good()) {
     string record, encoded, decoded;
-    std::getline(file, record);
+    input.get(record);
     this->codec->encode(encoded, record);
     this->codec->decode(decoded, encoded);
     if (decoded != record) {

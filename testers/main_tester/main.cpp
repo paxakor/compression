@@ -8,7 +8,7 @@
 #include "testers/main_tester/tester.h"
 #include "testers/stopwatch.h"
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char const* argv[]) {
   auto args = parse(argc, argv);
   if (args.exit) {
     return args.exit + 1;
@@ -23,7 +23,7 @@ int main(int argc, char const *argv[]) {
   tester.read_data(args.file_name, args.read_block);
   tester.learn_codec();
   tester.test_encode();
-#if 1
+#if 0
   const auto state = main_codec.save();
   main_codec.reset();
   main_codec.load(state);
