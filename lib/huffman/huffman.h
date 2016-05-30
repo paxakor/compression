@@ -6,7 +6,6 @@
 #include <functional>
 #include <queue>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 #include "lib/codec/codec.h"
@@ -16,8 +15,10 @@
 namespace Codecs {
 
 using Pair = std::pair<size_t, size_t>;
-using SmallPair = std::pair<uint8_t, uint16_t>;
 using Heap = std::priority_queue< Pair, vector<Pair>, std::greater<Pair> >;
+using SmallPair = std::pair<uint8_t, uint16_t>;
+using Wstring_view = std::experimental::basic_string_view<CharT>;
+using std::experimental::string_view;
 
 class HuffmanCodec : public CodecIFace {
 public:
@@ -48,7 +49,7 @@ protected:
   string** table;
   SmallPair** tree_table;
   size_t* frequency;
-  static constexpr size_t fr_sz = my256 * sizeof(size_t);
+  static constexpr size_t fr_sz = DICT_SIZE * sizeof(size_t);
 };
 
 }  // namespace Codecs

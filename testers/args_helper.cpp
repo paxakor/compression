@@ -8,11 +8,10 @@
 constexpr char help_message[] =
 R"(Usage: tester [option] [FILE]
 Options:
-  --help        print this message and exit
+  -h, --help    print this message and exit
   -1 ... -9     compress faster(1) or better(9) (default = 5)
-  -b            read blocks: "LE uint32_t (size) + record"
   -s            read strings (default)
-  FILE          read records from FILE)";
+  -b            read blocks: "LE uint32_t (size) + record")";
 
 const Args parse(const int argc, char const *argv[]) {
   Args res;

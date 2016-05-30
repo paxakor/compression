@@ -14,27 +14,27 @@ const size_t log_char_size = ceil(log2(CHAR_SIZE));
 
 HuffmanCodec::HuffmanCodec()
   : tree()
-  , table(new string*[my256])
-  , tree_table(new SmallPair*[my256])
-  , frequency(new size_t[my256]) {
-  for (size_t i = 0; i < my256; ++i) {
+  , table(new string*[DICT_SIZE])
+  , tree_table(new SmallPair*[DICT_SIZE])
+  , frequency(new size_t[DICT_SIZE]) {
+  for (size_t i = 0; i < DICT_SIZE; ++i) {
     this->table[i] = new string[CHAR_SIZE];
   }
 
-  for (size_t i = 0; i < my256; ++i) {
-    this->tree_table[i] = new SmallPair[my256];
+  for (size_t i = 0; i < DICT_SIZE; ++i) {
+    this->tree_table[i] = new SmallPair[DICT_SIZE];
   }
 
   memset(this->frequency, 0, fr_sz);
 }
 
 HuffmanCodec::~HuffmanCodec() {
-  for (size_t i = 0; i < my256; ++i) {
+  for (size_t i = 0; i < DICT_SIZE; ++i) {
     delete[] this->table[i];
   }
   delete[] this->table;
 
-  for (size_t i = 0; i < my256; ++i) {
+  for (size_t i = 0; i < DICT_SIZE; ++i) {
     delete[] this->tree_table[i];
   }
   delete[] this->tree_table;
@@ -48,7 +48,7 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
   // mv shows how many bits are already filled
   auto mv = log_char_size;
   for (const auto& ch : raw) {
-    const auto& code_str = this->table[static_cast<uint8_t>(ch)][mv];
+    const auto& code_str = this->table[static_cast<UCharT>(ch)][mv];
     mv = code_str[0];
     // guaranteed: code_str.size() >= 2
     const auto last = code_str.size() - 1;
@@ -77,14 +77,14 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
   const auto tree_ptr = this->tree.data();
   auto index = encoded.begin();
   auto iter = log_char_size;
-  uint8_t ch = *index << iter;
-  uint8_t next_ch = *(++index);
+  UCharT ch = *index << iter;
+  UCharT next_ch = *(++index);
   ch ^= (next_ch >> (CHAR_SIZE - iter));
   next_ch <<= iter;
   for (size_t j = iter; j < size;) {
-    size_t pos = 2 * my256 - 2;  // (tree.size() - 1) -- position of root node
+    size_t pos = 2 * DICT_SIZE - 2;  // position of root node
     while (!tree_ptr[pos].is_leaf) {
-      const auto pair = this->tree_table[pos - (my256 - 1)][ch];
+      const auto pair = this->tree_table[pos - (DICT_SIZE - 1)][ch];
       const size_t wasted = pair.first;
       pos = pair.second;
       j += wasted;
@@ -106,7 +106,7 @@ void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
 string HuffmanCodec::save() const {
   string data;
   data.resize(fr_sz);
-  memcpy(&data[0], this->frequency, fr_sz);
+  memcpy(const_cast<char*>(data.data()), this->frequency, fr_sz);
   return data;
 }
 
@@ -133,18 +133,19 @@ void HuffmanCodec::reset() {
 
 void HuffmanCodec::precalc_frequency(const vector<string_view>& all_samples) {
   for (const auto& record : all_samples) {
-    for (const auto& ch : record) {
-      this->frequency[static_cast<uint8_t>(ch)] += 1;
+    Wstring_view wrec(record.data(), record.size());
+    for (const auto& ch : wrec) {
+      this->frequency[static_cast<UCharT>(ch)] += 1;
     }
   }
 }
 
 void HuffmanCodec::load_frequency(const string_view& config) {
-  memcpy(this->frequency, &config[0], fr_sz);
+  memcpy(this->frequency, config.data(), fr_sz);
 }
 
 void HuffmanCodec::learn_or_load_all() {
-  this->tree.reserve(my256 * 2);
+  this->tree.reserve(DICT_SIZE * 2);
   Heap heap = this->build_heap();
   this->build_tree(heap);
   this->build_table();
@@ -153,7 +154,7 @@ void HuffmanCodec::learn_or_load_all() {
 
 Heap HuffmanCodec::build_heap() {
   Heap heap;
-  uint8_t ch = 0;
+  UCharT ch = 0;
   do {
     Node nd(ch);
     size_t position = this->tree.add_node(nd);
@@ -164,9 +165,9 @@ Heap HuffmanCodec::build_heap() {
 
 void HuffmanCodec::build_tree(Heap& heap) {
   while (heap.size() > 1) {
-    auto a = heap.top();
+    const auto a = heap.top();
     heap.pop();
-    auto b = heap.top();
+    const auto b = heap.top();
     heap.pop();
     size_t position = this->tree.add_node(Node(a.second, b.second));
     heap.push({a.first + b.first, position});
@@ -175,8 +176,8 @@ void HuffmanCodec::build_tree(Heap& heap) {
 }
 
 void HuffmanCodec::build_table() {
-  for (size_t i = 0; i < my256; ++i) {
-    string*& codes = this->table[static_cast<uint8_t>(this->tree[i].sym)];
+  for (size_t i = 0; i < DICT_SIZE; ++i) {
+    const auto& codes = this->table[static_cast<UCharT>(this->tree[i].sym)];
     for (size_t j = 0; j < CHAR_SIZE; ++j) {
       codes[j] = bools_to_string(this->tree.get_code(i), j);
     }
@@ -184,11 +185,11 @@ void HuffmanCodec::build_table() {
 }
 
 void HuffmanCodec::find_all_ways() {
-  uint8_t ch = 0;
+  UCharT ch = 0;
   do {
-    uint8_t pos = 0;
+    UCharT pos = 0;
     do {
-      this->tree_table[pos][ch] = this->tree.find_way(ch, pos + (my256 - 1));
+      this->tree_table[pos][ch] = this->tree.find_way(ch, pos + DICT_SIZE - 1);
     } while (++pos != 0);
   } while (++ch != 0);
 }
