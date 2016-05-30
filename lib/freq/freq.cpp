@@ -72,8 +72,7 @@ void FreqCodec::load(const string_view& config) {
 
 void FreqCodec::learn(const vector<string_view>& all_samples) {
   const size_t max_len = 16.0 * ((this->power + 1.0) / 10.0);
-  const size_t max_cnt = std::min(DICT_SIZE,
-    static_cast<size_t>(1 << (8 + max_len / 2))) - 256;
+  const size_t max_cnt = (1 << (8 + max_len / 2)) - 256;
   Trie::Trie tmp_trie;
   for (size_t idx = 0; idx < all_samples.size(); idx += 2) {
     const auto& sv = all_samples[idx];

@@ -16,7 +16,6 @@ namespace Codecs {
 
 using Pair = std::pair<size_t, size_t>;
 using Heap = std::priority_queue< Pair, vector<Pair>, std::greater<Pair> >;
-using SmallPair = std::pair<uint8_t, uint16_t>;
 using Wstring_view = std::experimental::basic_string_view<CharT>;
 using std::experimental::string_view;
 

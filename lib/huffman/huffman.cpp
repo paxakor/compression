@@ -132,9 +132,8 @@ void HuffmanCodec::reset() {
 }
 
 void HuffmanCodec::precalc_frequency(const vector<string_view>& all_samples) {
-  for (const auto& record : all_samples) {
-    Wstring_view wrec(record.data(), record.size());
-    for (const auto& ch : wrec) {
+  for (const auto& rec : all_samples) {
+    for (const auto& ch : rec) {
       this->frequency[static_cast<UCharT>(ch)] += 1;
     }
   }
@@ -156,9 +155,9 @@ Heap HuffmanCodec::build_heap() {
   Heap heap;
   UCharT ch = 0;
   do {
-    Node nd(ch);
-    size_t position = this->tree.add_node(nd);
-    heap.push({this->frequency[ch], position});
+    const Node nd(ch);
+    const size_t position = this->tree.add_node(nd);
+    heap.emplace(this->frequency[ch], position);
   } while (++ch != 0);
   return heap;
 }
@@ -169,8 +168,8 @@ void HuffmanCodec::build_tree(Heap& heap) {
     heap.pop();
     const auto b = heap.top();
     heap.pop();
-    size_t position = this->tree.add_node(Node(a.second, b.second));
-    heap.push({a.first + b.first, position});
+    const size_t position = this->tree.add_node(Node(a.second, b.second));
+    heap.emplace(a.first + b.first, position);
   }
   this->tree.back().parent = this->tree.size();
 }

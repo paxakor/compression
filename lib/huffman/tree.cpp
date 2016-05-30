@@ -63,7 +63,7 @@ std::vector<bool> Tree::get_code(size_t pos) const {
   return vec;
 }
 
-std::pair<uint8_t, uint16_t> Tree::find_way(CharT ch, size_t pos) const {
+SmallPair Tree::find_way(CharT ch, size_t pos) const {
   size_t i = CHAR_SIZE;
   while (i != 0 && !this->at(pos).is_leaf) {
     if (ch & (1 << (CHAR_SIZE - 1))) {

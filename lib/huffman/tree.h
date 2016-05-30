@@ -6,6 +6,8 @@
 #include <utility>
 #include "lib/common/defs.h"
 
+using SmallPair = std::pair<uint8_t, uint16_t>;
+
 class Node {
 public:
   Node();
@@ -25,5 +27,5 @@ class Tree : public std::vector<Node> {
 public:
   size_t add_node(const Node&);
   std::vector<bool> get_code(size_t) const;
-  std::pair<uint8_t, uint16_t> find_way(CharT, size_t) const;
+  SmallPair find_way(CharT, size_t) const;
 };
