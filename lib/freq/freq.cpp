@@ -19,7 +19,7 @@ FreqCodec::FreqCodec(size_t p)
 
 using IndexType = uint16_t;
 
-void FreqCodec::encode(string& encoded, const string_view& raw) const {
+void FreqCodec::encode(string& encoded, const string& raw) const {
   const auto& trie_data = this->trie.data();
   std::vector<IndexType> res;
   res.reserve(raw.size());
@@ -42,7 +42,7 @@ void FreqCodec::encode(string& encoded, const string_view& raw) const {
   memcpy(const_cast<char*>(encoded.data()), res.data(), sz);
 }
 
-void FreqCodec::decode(string& raw, const string_view& encoded) const {
+void FreqCodec::decode(string& raw, const string& encoded) const {
   std::vector<IndexType> res(encoded.size() / sizeof(IndexType));
   memcpy(const_cast<IndexType*>(res.data()), encoded.data(), encoded.size());
   raw.reserve(encoded.size() * 4);
@@ -60,17 +60,17 @@ string FreqCodec::save() const {
   return res;
 }
 
-void FreqCodec::load(const string_view& config) {
+void FreqCodec::load(const string& config) {
   size_t i = 0;
   while (i < config.size()) {
     uint8_t sz = config[i++];
-    this->strs_for_build.push_back(config.substr(i, sz).to_string());
+    this->strs_for_build.push_back(config.substr(i, sz));
     i += sz;
   }
   this->build_trie();
 }
 
-void FreqCodec::learn(const vector<string_view>& all_samples) {
+void FreqCodec::learn(const vector<string>& all_samples) {
   const size_t max_len = 16.0 * ((this->power + 1.0) / 10.0);
   const size_t max_cnt = (1 << (8 + max_len / 2)) - 256;
   Trie::Trie tmp_trie;

@@ -42,7 +42,7 @@ HuffmanCodec::~HuffmanCodec() {
   delete[] this->frequency;
 }
 
-void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
+void HuffmanCodec::encode(string& encoded, const string& raw) const {
   encoded.reserve(raw.size() * 2);
   char code = 0;
   // mv shows how many bits are already filled
@@ -69,7 +69,7 @@ void HuffmanCodec::encode(string& encoded, const string_view& raw) const {
   encoded[0] ^= static_cast<char>(mv) << (CHAR_SIZE - log_char_size);
 }
 
-void HuffmanCodec::decode(string& raw, const string_view& encoded) const {
+void HuffmanCodec::decode(string& raw, const string& encoded) const {
   raw.reserve(encoded.size() * 2);
   const size_t rest = ((encoded[0] >> (CHAR_SIZE - log_char_size)) &
     ((1 << log_char_size) - 1));
@@ -110,12 +110,12 @@ string HuffmanCodec::save() const {
   return data;
 }
 
-void HuffmanCodec::load(const string_view& config) {
+void HuffmanCodec::load(const string& config) {
   this->load_frequency(config);
   this->learn_or_load_all();
 }
 
-void HuffmanCodec::learn(const vector<string_view>& all_samples) {
+void HuffmanCodec::learn(const vector<string>& all_samples) {
   this->precalc_frequency(all_samples);
   this->learn_or_load_all();
 }
@@ -131,7 +131,7 @@ void HuffmanCodec::reset() {
   this->tree.clear();
 }
 
-void HuffmanCodec::precalc_frequency(const vector<string_view>& all_samples) {
+void HuffmanCodec::precalc_frequency(const vector<string>& all_samples) {
   for (const auto& rec : all_samples) {
     for (const auto& ch : rec) {
       this->frequency[static_cast<UCharT>(ch)] += 1;
@@ -139,7 +139,7 @@ void HuffmanCodec::precalc_frequency(const vector<string_view>& all_samples) {
   }
 }
 
-void HuffmanCodec::load_frequency(const string_view& config) {
+void HuffmanCodec::load_frequency(const string& config) {
   memcpy(this->frequency, config.data(), fr_sz);
 }
 

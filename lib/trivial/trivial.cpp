@@ -6,19 +6,19 @@
 
 namespace Codecs {
 
-void TrivialCodec::encode(string& encoded, const string_view& raw) const {
-  encoded = raw.to_string();
+void TrivialCodec::encode(string& encoded, const string& raw) const {
+  encoded = raw;
 }
 
-void TrivialCodec::decode(string& raw, const string_view& encoded) const {
-  raw = encoded.to_string();
+void TrivialCodec::decode(string& raw, const string& encoded) const {
+  raw = encoded;
 }
 
 string TrivialCodec::save() const { }
 
-void TrivialCodec::load(const string_view& config) { }
+void TrivialCodec::load(const string& config) { }
 
-void TrivialCodec::learn(const vector<string_view>& all_samples) { }
+void TrivialCodec::learn(const vector<string>& all_samples) { }
 
 size_t TrivialCodec::sample_size(size_t records_total) const {
   return 0;

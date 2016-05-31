@@ -16,28 +16,26 @@ namespace Codecs {
 
 using Pair = std::pair<size_t, size_t>;
 using Heap = std::priority_queue< Pair, vector<Pair>, std::greater<Pair> >;
-using Wstring_view = std::experimental::basic_string_view<CharT>;
-using std::experimental::string_view;
 
 class HuffmanCodec : public CodecIFace {
 public:
   HuffmanCodec();
   ~HuffmanCodec();
 
-  void encode(string&, const string_view&) const override;
-  void decode(string&, const string_view&) const override;
+  void encode(string&, const string&) const override;
+  void decode(string&, const string&) const override;
 
   string save() const override;
-  void load(const string_view&) override;
+  void load(const string&) override;
 
   size_t sample_size(size_t) const override;
-  void learn(const vector<string_view>&) override;
+  void learn(const vector<string>&) override;
 
   void reset() override;
 
 protected:
-  void precalc_frequency(const vector<string_view>&);
-  void load_frequency(const string_view&);
+  void precalc_frequency(const vector<string>&);
+  void load_frequency(const string&);
   void learn_or_load_all();
   Heap build_heap();
   void build_tree(Heap&);

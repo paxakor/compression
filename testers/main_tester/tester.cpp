@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <experimental/algorithm>
-#include <experimental/string_view>
 #include "lib/common/utils.h"
 #include "testers/main_tester/tester.h"
 #include "testers/reader.h"
@@ -18,7 +17,7 @@ void select_sample(Container& cont, const Source& src, size_t sample_size) {
 
 void Tester::learn_codec() {
   Stopwatch sw("Learning");
-  std::vector<std::experimental::string_view> sample;
+  std::vector<string> sample;
   const size_t smpl_sz = this->codec->sample_size(this->data.size());
   select_sample(sample, this->data, smpl_sz);
   this->codec->learn(sample);

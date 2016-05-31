@@ -27,7 +27,7 @@ void MultiCodec::pop() {
   this->codecs_list.pop_back();
 }
 
-void MultiCodec::encode(string& encoded, const string_view& raw) const {
+void MultiCodec::encode(string& encoded, const string& raw) const {
   const auto codecs_count = this->codecs_list.size();
   auto cdc = this->codecs_list.begin();
   if (codecs_count == 1) {
@@ -43,7 +43,7 @@ void MultiCodec::encode(string& encoded, const string_view& raw) const {
   }
 }
 
-void MultiCodec::decode(string& raw, const string_view& encoded) const {
+void MultiCodec::decode(string& raw, const string& encoded) const {
   const auto codecs_count = this->codecs_list.size();
   auto cdc = this->codecs_list.rbegin();
   if (codecs_count == 1) {
@@ -75,7 +75,7 @@ string MultiCodec::save() const {
   return data;
 }
 
-void MultiCodec::load(const string_view& config) {
+void MultiCodec::load(const string& config) {
   constexpr auto num_sz = sizeof(size_t);
   size_t already_read = 0;
   for_each_codec([&](CodecIFace* cdc) {
@@ -89,13 +89,13 @@ void MultiCodec::load(const string_view& config) {
   });
 }
 
-void MultiCodec::learn(const vector<string_view>& all_samples) {
+void MultiCodec::learn(const vector<string>& all_samples) {
   vector<string> samples;
   for (const auto& smpl : all_samples) {
-    samples.emplace_back(smpl.to_string());
+    samples.emplace_back(smpl);
   }
   for_each_codec([&](CodecIFace* cdc) {
-    cdc->learn(vector<string_view>(samples.begin(), samples.end()));
+    cdc->learn(vector<string>(samples.begin(), samples.end()));
     for (auto& smpl : samples) {
       string tmp;
       cdc->encode(tmp, smpl);

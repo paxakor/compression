@@ -5,7 +5,6 @@
 #include <cinttypes>
 #include <string>
 #include <vector>
-#include <experimental/string_view>
 #include "lib/codec/codec.h"
 #include "lib/freq/trie.h"
 
@@ -13,28 +12,27 @@ namespace Codecs {
 
 using std::string;
 using std::vector;
-using std::experimental::string_view;
 
 class FreqCodec : public CodecIFace {
 public:
   FreqCodec(size_t);
 
-  void encode(string&, const string_view&) const override;
-  void decode(string&, const string_view&) const override;
+  void encode(string&, const string&) const override;
+  void decode(string&, const string&) const override;
 
   string save() const override;
-  void load(const string_view&) override;
+  void load(const string&) override;
 
   size_t sample_size(size_t) const override;
-  void learn(const vector<string_view>&) override;
+  void learn(const vector<string>&) override;
 
   void reset() override;
 
 protected:
   void build_trie();
   Trie::Trie trie;
-  std::vector<std::string> strs;
-  std::vector<std::string> strs_for_build;
+  vector<string> strs;
+  vector<string> strs_for_build;
   const size_t power;
 };
 

@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <experimental/string_view>
 #include "testers/stream_tester/stream_tester.h"
 #include "testers/reader.h"
 #include "testers/stopwatch.h"
@@ -64,18 +63,16 @@ void StreamTester::learn_codec() {
     get_records_count(this->data_file, this->read_block);
   const size_t smpl_sz = this->codec->sample_size(records_count);
   const size_t k = records_count / smpl_sz;
-  vector<string> sample_storage;
+  vector<string> sample;
   Reader input(this->data_file, this->read_block);
-  for (size_t i = 0; sample_storage.size() < smpl_sz && input.good(); ++i) {
+  for (size_t i = 0; sample.size() < smpl_sz && input.good(); ++i) {
     string record;
     input.get(record);
     if (i % k == 0) {
-      sample_storage.push_back(record);
+      sample.push_back(record);
     }
   }
   input.close();
-  vector<std::experimental::string_view> sample(sample_storage.begin(),
-    sample_storage.end());
   Stopwatch sw("Learning");
   this->codec->learn(sample);
 }
