@@ -16,6 +16,7 @@ set(SOURCES
   freq/trie.cpp
   huffman/huffman.cpp
   huffman/tree.cpp
+  mixed/mixed.cpp
   trivial/trivial.cpp)
 
 add_library(codec SHARED ${SOURCES})
