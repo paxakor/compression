@@ -52,7 +52,7 @@ protected:
 // from HuffmanCodec:
   void huff_encode(string&, const wide_string_view&) const;
   void huff_decode(wide_string&, const string_view&) const;
-  void precalc_frequency(const vector<wide_string_view>&);
+  void precalc_frequency(const vector<wide_string>&);
   void load_frequency(const string_view&);
   void learn_or_load_all();
   Heap build_heap();
@@ -61,8 +61,8 @@ protected:
   void find_all_ways();
 
   Tree tree;
-  string** table;
-  SmallPair** tree_table;
+  vector< vector<string> > table;
+  vector< vector<SmallPair> > tree_table;
   size_t* frequency;
   static constexpr size_t fr_sz = DICT_SIZE * sizeof(size_t);
 };
