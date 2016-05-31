@@ -18,7 +18,8 @@ namespace Codecs {
 
 using Pair = std::pair<size_t, size_t>;
 using Heap = std::priority_queue< Pair, vector<Pair>, std::greater<Pair> >;
-using Wstring_view = std::experimental::basic_string_view<CharT>;
+using wide_string = std::basic_string<CharT>;
+using wide_string_view = std::experimental::basic_string_view<CharT>;
 using std::experimental::string_view;
 
 class MixedCodec : public CodecIFace {
@@ -39,8 +40,8 @@ public:
 
 protected:
 // from FreqCodec:
-  void freq_encode(string&, const string_view&) const;
-  void freq_decode(string&, const string_view&) const;
+  void freq_encode(wide_string&, const string_view&) const;
+  void freq_decode(string&, const wide_string_view&) const;
   void freq_learn(const vector<string_view>&);
   void build_trie();
   Trie::Trie trie;
@@ -49,9 +50,9 @@ protected:
   const size_t power;
 
 // from HuffmanCodec:
-  void huff_encode(string&, const string_view&) const;
-  void huff_decode(string&, const string_view&) const;
-  void precalc_frequency(const vector<string_view>&);
+  void huff_encode(string&, const wide_string_view&) const;
+  void huff_decode(wide_string&, const string_view&) const;
+  void precalc_frequency(const vector<wide_string_view>&);
   void load_frequency(const string_view&);
   void learn_or_load_all();
   Heap build_heap();

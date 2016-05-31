@@ -25,7 +25,7 @@ int main(int argc, char const* argv[]) {
   tester.read_data(args.file_name, args.read_block);
   tester.learn_codec();
   tester.test_encode();
-#if 1
+#if 0
   const auto state = mix.save();
   mix.reset();
   mix.load(state);

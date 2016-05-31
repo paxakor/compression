@@ -1,5 +1,6 @@
 // Copyright 2016, Pavel Korozevtsev.
 
+#include <iostream>
 #include <cmath>
 #include <cstring>
 #include <algorithm>
@@ -44,24 +45,26 @@ MixedCodec::~MixedCodec() {
 }
 
 void MixedCodec::encode(string& encoded, const string_view& raw) const {
-  string tmp;
+  wide_string tmp;
   this->freq_encode(tmp, raw);
   this->huff_encode(encoded, tmp);
 }
 
 void MixedCodec::decode(string& raw, const string_view& encoded) const {
-  string tmp;
+  wide_string tmp;
   this->huff_decode(tmp, encoded);
   this->freq_decode(raw, tmp);
 }
 
 using FreqIndexType = uint16_t;
 
-void MixedCodec::freq_encode(string& encoded, const string_view& raw) const {
+void MixedCodec::freq_encode(wide_string& encoded, const string_view& raw) const {
   const auto& trie_data = this->trie.data();
   std::vector<FreqIndexType> res;
   res.reserve(raw.size());
   FreqIndexType nd_ptr = 0;
+  // encoded.reserve(raw.size() * sizeof(UCharT));
+  // UCharT nd_ptr = 0;
   for (auto ch = raw.begin(); ch != raw.end();) {
     const auto iter = trie_data[nd_ptr].children[static_cast<uint8_t>(*ch)];
     if (iter != 0) {
@@ -80,7 +83,7 @@ void MixedCodec::freq_encode(string& encoded, const string_view& raw) const {
   memcpy(const_cast<char*>(encoded.data()), res.data(), sz);
 }
 
-void MixedCodec::freq_decode(string& raw, const string_view& encoded) const {
+void MixedCodec::freq_decode(string& raw, const wide_string_view& encoded) const {
   std::vector<FreqIndexType> res(encoded.size() / sizeof(FreqIndexType));
   memcpy(const_cast<FreqIndexType*>(res.data()), encoded.data(), encoded.size());
   raw.reserve(encoded.size() * 4);
@@ -141,7 +144,7 @@ void MixedCodec::freq_learn(const vector<string_view>& all_samples) {
   this->build_trie();
 }
 
-void MixedCodec::huff_encode(string& encoded, const string_view& raw) const {
+void MixedCodec::huff_encode(string& encoded, const wide_string_view& raw) const {
   encoded.reserve(raw.size() * 2);
   char code = 0;
   // mv shows how many bits are already filled
@@ -168,7 +171,7 @@ void MixedCodec::huff_encode(string& encoded, const string_view& raw) const {
   encoded[0] ^= static_cast<char>(mv) << (CHAR_SIZE - log_char_size);
 }
 
-void MixedCodec::huff_decode(string& raw, const string_view& encoded) const {
+void MixedCodec::huff_decode(wide_string& raw, const string_view& encoded) const {
   raw.reserve(encoded.size() * 2);
   const size_t rest = ((encoded[0] >> (CHAR_SIZE - log_char_size)) &
     ((1 << log_char_size) - 1));
@@ -230,12 +233,12 @@ void MixedCodec::load(const string_view& config) {
 
 void MixedCodec::learn(const vector<string_view>& all_samples) {
   this->freq_learn(all_samples);
-  vector<string> encoded(all_samples.size());
+  vector<wide_string> encoded(all_samples.size());
   auto iter = encoded.begin();
   for (const auto& smpl : all_samples) {
     this->freq_encode(*(iter++), smpl);
   }
-  vector<string_view> encoded_refs(encoded.begin(), encoded.end());
+  const vector<wide_string_view> encoded_refs(encoded.begin(), encoded.end());
   this->precalc_frequency(encoded_refs);
   this->learn_or_load_all();
 }
@@ -266,7 +269,7 @@ void MixedCodec::build_trie() {
   }
 }
 
-void MixedCodec::precalc_frequency(const vector<string_view>& all_samples) {
+void MixedCodec::precalc_frequency(const vector<wide_string_view>& all_samples) {
   for (const auto& rec : all_samples) {
     for (const auto& ch : rec) {
       this->frequency[static_cast<UCharT>(ch)] += 1;
