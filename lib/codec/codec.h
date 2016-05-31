@@ -14,30 +14,6 @@ using std::string;
 using std::vector;
 using std::experimental::string_view;
 
-class CodecException : public std::exception, public std::ostringstream {
-protected:
-  string descr;
-public:
-  CodecException() = default;
-  CodecException(CodecException&& c) noexcept {
-    (*this) = std::move(c);
-  }
-
-  CodecException& operator=(CodecException&& c) noexcept {
-    descr = std::move(c.descr);
-    (std::exception&)(*this) = std::move(c);
-    return *this;
-  }
-
-  explicit CodecException(const string& d)
-    : descr(d)
-  {}
-
-  const char* what() const noexcept override {
-    return descr.c_str();
-  }
-};
-
 class CodecIFace {
 public:
   virtual void encode(string& encoded, const string_view& raw) const = 0;
