@@ -56,12 +56,3 @@ void shrink_all_strings(vector<string>& vec) {
     str.shrink_to_fit();
   }
 }
-
-string print_string_binary(const string& str) {
-  string result;
-  for (const auto& ch : str) {
-    result += print_number_binary(ch) + " ";
-  }
-  result.erase(result.size() - 1, 1);
-  return result;
-}

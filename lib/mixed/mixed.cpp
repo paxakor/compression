@@ -48,6 +48,12 @@ void MixedCodec::encode(string& encoded, const string_view& raw) const {
   wide_string tmp;
   this->freq_encode(tmp, raw);
   this->huff_encode(encoded, tmp);
+  wide_string olo;
+  this->huff_decode(olo, encoded);
+  if (tmp != olo) {
+    std::cout << "1) " << print_string_binary(tmp) << std::endl;
+    std::cout << "2) " << print_string_binary(olo) << std::endl;
+  }
 }
 
 void MixedCodec::decode(string& raw, const string_view& encoded) const {
@@ -61,7 +67,7 @@ using FreqIndexType = uint16_t;
 void MixedCodec::freq_encode(wide_string& encoded, const string_view& raw) const {
   const auto& trie_data = this->trie.data();
   std::vector<FreqIndexType> res;
-  res.reserve(raw.size());
+  // res.reserve(raw.size());
   FreqIndexType nd_ptr = 0;
   for (auto ch = raw.begin(); ch != raw.end();) {
     const auto iter = trie_data[nd_ptr].children[static_cast<uint8_t>(*ch)];
@@ -76,15 +82,17 @@ void MixedCodec::freq_encode(wide_string& encoded, const string_view& raw) const
   if (nd_ptr != 0) {
     res.push_back(nd_ptr);
   }
-  const size_t sz = res.size() * sizeof(FreqIndexType);
+  const size_t sz = res.size() * sizeof(FreqIndexType) / sizeof(CharT);
   encoded.resize(sz);
   memcpy(reinterpret_cast<char*>(const_cast<CharT*>(encoded.data())),
     res.data(), sz);
 }
 
 void MixedCodec::freq_decode(string& raw, const wide_string_view& encoded) const {
-  std::vector<FreqIndexType> res(encoded.size() / sizeof(FreqIndexType));
-  memcpy(const_cast<FreqIndexType*>(res.data()), encoded.data(), encoded.size());
+  std::vector<FreqIndexType> res(encoded.size() * sizeof(CharT) /
+    sizeof(FreqIndexType));
+  memcpy(const_cast<FreqIndexType*>(res.data()), encoded.data(),
+    encoded.size() * sizeof(CharT));
   raw.reserve(encoded.size() * 4);
   for (const auto& nd : res) {
     raw += this->strs[nd];
@@ -188,7 +196,7 @@ void MixedCodec::huff_decode(wide_string& raw, const string_view& encoded) const
   for (size_t j = iter; j < size;) {
     size_t pos = this->tree.size() - 1;  // position of root node
     while (!tree_ptr[pos].is_leaf) {
-      const auto pair = this->tree_table[pos - (DICT_SIZE - 1)][ch];
+      const auto pair = this->tree_table[pos - (DICT_SIZE - 1)][ch & MASK];
       const size_t wasted = pair.first;
       pos = pair.second;
       j += wasted;
