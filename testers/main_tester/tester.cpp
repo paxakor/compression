@@ -90,7 +90,6 @@ void Tester::test_correctness() const {
 void Tester::test_size() const {
   const float a = print_size(this->data,    "data   ");
   const float b = print_size(this->encoded, "encoded");
-  const float c = print_size(this->decoded, "decoded");
   std::cout << "Compressed by " << (1 - b / a) * 100 << "%" << std::endl;
 }
 

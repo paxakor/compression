@@ -12,10 +12,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(SOURCES
   codec/multi_codec.cpp
   common/utils.cpp
-  freq/freq.cpp
-  freq/trie.cpp
-  huffman/huffman.cpp
-  huffman/tree.cpp
+  mixed/trie.cpp
+  mixed/tree.cpp
   mixed/mixed.cpp
   trivial/trivial.cpp)
 

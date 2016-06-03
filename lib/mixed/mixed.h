@@ -11,8 +11,8 @@
 #include <experimental/string_view>
 #include "lib/codec/codec.h"
 #include "lib/common/defs.h"
-#include "lib/freq/trie.h"
-#include "lib/huffman/tree.h"
+#include "lib/mixed/tree.h"
+#include "lib/mixed/trie.h"
 
 namespace Codecs {
 

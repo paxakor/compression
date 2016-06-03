@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include "lib/freq/trie.h"
+#include "lib/mixed/trie.h"
 
 namespace Trie {
 

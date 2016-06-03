@@ -1,6 +1,5 @@
 // Copyright 2016, Pavel Korozevtsev.
 
-#include <iostream>
 #include <cmath>
 #include <cstring>
 #include <algorithm>
@@ -190,7 +189,6 @@ void MixedCodec::huff_decode(wide_string& raw, const string_view& encoded) const
       iter += wasted;
       if (iter >= CHAR_SIZE) {
         iter -= CHAR_SIZE;
-        // next_ch = ++index != encoded.end() ? *index : 0;
         next_ch = *(++index);
         ch ^= (next_ch >> (CHAR_SIZE - iter));
         next_ch <<= iter;

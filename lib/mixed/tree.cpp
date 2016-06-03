@@ -5,7 +5,7 @@
 #include <vector>
 #include "lib/common/defs.h"
 #include "lib/common/utils.h"
-#include "lib/huffman/tree.h"
+#include "lib/mixed/tree.h"
 
 Node::Node()
   : is_leaf(false)
