@@ -63,8 +63,6 @@ void MixedCodec::freq_encode(wide_string& encoded, const string_view& raw) const
   std::vector<FreqIndexType> res;
   res.reserve(raw.size());
   FreqIndexType nd_ptr = 0;
-  // encoded.reserve(raw.size() * sizeof(UCharT));
-  // UCharT nd_ptr = 0;
   for (auto ch = raw.begin(); ch != raw.end();) {
     const auto iter = trie_data[nd_ptr].children[static_cast<uint8_t>(*ch)];
     if (iter != 0) {
@@ -80,7 +78,8 @@ void MixedCodec::freq_encode(wide_string& encoded, const string_view& raw) const
   }
   const size_t sz = res.size() * sizeof(FreqIndexType);
   encoded.resize(sz);
-  memcpy(const_cast<char*>(encoded.data()), res.data(), sz);
+  memcpy(reinterpret_cast<char*>(const_cast<CharT*>(encoded.data())),
+    res.data(), sz);
 }
 
 void MixedCodec::freq_decode(string& raw, const wide_string_view& encoded) const {
@@ -94,7 +93,8 @@ void MixedCodec::freq_decode(string& raw, const wide_string_view& encoded) const
 
 void MixedCodec::freq_learn(const vector<string_view>& all_samples) {
   const size_t max_len = 16.0 * ((this->power + 1.0) / 10.0);
-  const size_t max_cnt = (1 << (8 + max_len / 2)) - 256;
+  const size_t max_exp = 1 << (8 + max_len / 2);
+  const size_t max_cnt = std::min(DICT_SIZE, max_exp) - 256;
   Trie::Trie tmp_trie;
   for (size_t idx = 0; idx < all_samples.size(); idx += 2) {
     const auto& sv = all_samples[idx];
@@ -139,7 +139,9 @@ void MixedCodec::freq_learn(const vector<string_view>& all_samples) {
 
   for (size_t i = 0; i < best_nodes.size() &&
     this->trie.data().size() < max_cnt; ++i) {
-    this->strs_for_build.push_back(tmp_trie.get_string(best_nodes[i].second));
+    const auto str = tmp_trie.get_string(best_nodes[i].second);
+    this->strs_for_build.push_back(str);
+    this->trie.add(str);
   }
   this->build_trie();
 }
@@ -179,12 +181,12 @@ void MixedCodec::huff_decode(wide_string& raw, const string_view& encoded) const
   const auto tree_ptr = this->tree.data();
   auto index = encoded.begin();
   auto iter = log_char_size;
-  UCharT ch = *index << iter;
-  UCharT next_ch = *(++index);
+  uint8_t ch = *index << iter;
+  uint8_t next_ch = *(++index);
   ch ^= (next_ch >> (CHAR_SIZE - iter));
   next_ch <<= iter;
   for (size_t j = iter; j < size;) {
-    size_t pos = 2 * DICT_SIZE - 2;  // position of root node
+    size_t pos = this->tree.size() - 1;  // position of root node
     while (!tree_ptr[pos].is_leaf) {
       const auto pair = this->tree_table[pos - (DICT_SIZE - 1)][ch];
       const size_t wasted = pair.first;
@@ -198,7 +200,7 @@ void MixedCodec::huff_decode(wide_string& raw, const string_view& encoded) const
         iter -= CHAR_SIZE;
         next_ch = *(++index);
         ch ^= (next_ch >> (CHAR_SIZE - iter));
-        next_ch = next_ch << iter;
+        next_ch <<= iter;
       }
     }
     raw.push_back(tree_ptr[pos].sym);
@@ -227,6 +229,9 @@ void MixedCodec::load(const string_view& config) {
     uint8_t sz = config[i++];
     this->strs_for_build.push_back(config.substr(i, sz).to_string());
     i += sz;
+  }
+  for (const auto& s : this->strs_for_build) {
+    this->trie.add(s);
   }
   this->build_trie();
 }
@@ -259,9 +264,6 @@ void MixedCodec::reset() {
 }
 
 void MixedCodec::build_trie() {
-  for (const auto& s : this->strs_for_build) {
-    this->trie.add(s);
-  }
   this->trie.add_all_chars();
   this->strs.resize(this->trie.data().size());
   for (size_t i = 0; i < strs.size(); ++i) {
@@ -269,8 +271,8 @@ void MixedCodec::build_trie() {
   }
 }
 
-void MixedCodec::precalc_frequency(const vector<wide_string_view>& all_samples) {
-  for (const auto& rec : all_samples) {
+void MixedCodec::precalc_frequency(const vector<wide_string_view>& samples) {
+  for (const auto& rec : samples) {
     for (const auto& ch : rec) {
       this->frequency[static_cast<UCharT>(ch)] += 1;
     }
@@ -296,7 +298,7 @@ Heap MixedCodec::build_heap() {
     const Node nd(ch);
     const size_t position = this->tree.add_node(nd);
     heap.emplace(this->frequency[ch], position);
-  } while (++ch != 0);
+  } while (++ch != DICT_SIZE);
   return heap;
 }
 
@@ -327,8 +329,8 @@ void MixedCodec::find_all_ways() {
     UCharT pos = 0;
     do {
       this->tree_table[pos][ch] = this->tree.find_way(ch, pos + DICT_SIZE - 1);
-    } while (++pos != 0);
-  } while (++ch != 0);
+    } while (++pos != DICT_SIZE);
+  } while (++ch != DICT_SIZE);
 }
 
 }  // namespace Codecs
