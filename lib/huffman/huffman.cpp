@@ -48,7 +48,7 @@ void HuffmanCodec::encode(string& encoded, const string& raw) const {
   // mv shows how many bits are already filled
   auto mv = log_char_size;
   for (const auto& ch : raw) {
-    const auto& code_str = this->table[static_cast<UCharT>(ch)][mv];
+    const auto& code_str = this->table[static_cast<uint8_t>(ch)][mv];
     mv = code_str[0];
     // guaranteed: code_str.size() >= 2
     const auto last = code_str.size() - 1;
@@ -77,8 +77,8 @@ void HuffmanCodec::decode(string& raw, const string& encoded) const {
   const auto tree_ptr = this->tree.data();
   auto index = encoded.begin();
   auto iter = log_char_size;
-  UCharT ch = *index << iter;
-  UCharT next_ch = *(++index);
+  uint8_t ch = *index << iter;
+  uint8_t next_ch = *(++index);
   ch ^= (next_ch >> (CHAR_SIZE - iter));
   next_ch <<= iter;
   for (size_t j = iter; j < size;) {
@@ -134,7 +134,7 @@ void HuffmanCodec::reset() {
 void HuffmanCodec::precalc_frequency(const vector<string>& all_samples) {
   for (const auto& rec : all_samples) {
     for (const auto& ch : rec) {
-      this->frequency[static_cast<UCharT>(ch)] += 1;
+      this->frequency[static_cast<uint8_t>(ch)] += 1;
     }
   }
 }
@@ -153,7 +153,7 @@ void HuffmanCodec::learn_or_load_all() {
 
 Heap HuffmanCodec::build_heap() {
   Heap heap;
-  UCharT ch = 0;
+  uint8_t ch = 0;
   do {
     const Node nd(ch);
     const size_t position = this->tree.add_node(nd);
@@ -176,7 +176,7 @@ void HuffmanCodec::build_tree(Heap& heap) {
 
 void HuffmanCodec::build_table() {
   for (size_t i = 0; i < DICT_SIZE; ++i) {
-    const auto& codes = this->table[static_cast<UCharT>(this->tree[i].sym)];
+    const auto& codes = this->table[static_cast<uint8_t>(this->tree[i].sym)];
     for (size_t j = 0; j < CHAR_SIZE; ++j) {
       codes[j] = bools_to_string(this->tree.get_code(i), j);
     }
@@ -184,9 +184,9 @@ void HuffmanCodec::build_table() {
 }
 
 void HuffmanCodec::find_all_ways() {
-  UCharT ch = 0;
+  uint8_t ch = 0;
   do {
-    UCharT pos = 0;
+    uint8_t pos = 0;
     do {
       this->tree_table[pos][ch] = this->tree.find_way(ch, pos + DICT_SIZE - 1);
     } while (++pos != 0);

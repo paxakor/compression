@@ -19,7 +19,7 @@ int main(int argc, char const* argv[]) {
   Codecs::TrivialCodec triv;
   Codecs::MultiCodec main_codec(2, &freq, &huffman);
   Tester tester;
-  tester.set_codec(huffman);
+  tester.set_codec(main_codec);
   tester.read_data(args.file_name, args.read_block);
   tester.learn_codec();
   tester.test_encode();

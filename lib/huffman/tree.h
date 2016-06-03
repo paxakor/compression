@@ -11,7 +11,7 @@ using SmallPair = std::pair<uint8_t, uint16_t>;
 class Node {
 public:
   Node();
-  explicit Node(CharT);
+  explicit Node(char);
   Node(size_t, size_t);
   Node(const Node&);
 
@@ -20,12 +20,12 @@ public:
   size_t parent;
   size_t child_l;
   size_t child_r;
-  CharT sym;
+  char sym;
 };
 
 class Tree : public std::vector<Node> {
 public:
   size_t add_node(const Node&);
   std::vector<bool> get_code(size_t) const;
-  SmallPair find_way(CharT, size_t) const;
+  SmallPair find_way(char, size_t) const;
 };
