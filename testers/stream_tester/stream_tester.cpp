@@ -98,6 +98,8 @@ void StreamTester::test_all() const {
     this->codec->decode(decoded, encoded);
     if (decoded != record) {
       ++errors;
+      // std::cout << "1) " << record << std::endl;
+      // std::cout << "2) " << decoded << std::endl;
     }
     data_size += record.size();
     encoded_size += encoded.size();

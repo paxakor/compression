@@ -24,7 +24,7 @@ MixedCodec::MixedCodec(const size_t p)
   }
 
   for (size_t i = 0; i < DICT_SIZE; ++i) {
-    this->tree_table[i] = new SmallPair[DICT_SIZE];
+    this->tree_table[i] = new SmallPair[256];
   }
 
   memset(this->frequency, 0, fr_sz);
@@ -48,12 +48,12 @@ void MixedCodec::encode(string& encoded, const string_view& raw) const {
   wide_string tmp;
   this->freq_encode(tmp, raw);
   this->huff_encode(encoded, tmp);
-  wide_string olo;
-  this->huff_decode(olo, encoded);
-  if (tmp != olo) {
-    std::cout << "1) " << print_string_binary(tmp) << std::endl;
-    std::cout << "2) " << print_string_binary(olo) << std::endl;
-  }
+  // wide_string olo;
+  // this->huff_decode(olo, encoded);
+  // if (tmp != olo) {
+  //   std::cout << "1) " << print_string_binary(tmp) << std::endl;
+  //   std::cout << "2) " << print_string_binary(olo) << std::endl;
+  // }
 }
 
 void MixedCodec::decode(string& raw, const string_view& encoded) const {
@@ -82,6 +82,7 @@ void MixedCodec::freq_encode(wide_string& encoded, const string_view& raw) const
   if (nd_ptr != 0) {
     res.push_back(nd_ptr);
   }
+  std::cout << "1 -- " << res.size() << std::endl;
   const size_t sz = res.size() * sizeof(FreqIndexType) / sizeof(CharT);
   encoded.resize(sz);
   memcpy(reinterpret_cast<char*>(const_cast<CharT*>(encoded.data())),
@@ -93,8 +94,9 @@ void MixedCodec::freq_decode(string& raw, const wide_string_view& encoded) const
     sizeof(FreqIndexType));
   memcpy(const_cast<FreqIndexType*>(res.data()), encoded.data(),
     encoded.size() * sizeof(CharT));
-  raw.reserve(encoded.size() * 4);
-  for (const auto& nd : res) {
+  std::cout << "2 -- " << res.size() << std::endl;
+  // raw.reserve(encoded.size() * 4);
+  for (const auto& nd : encoded) {
     raw += this->strs[nd];
   }
 }
@@ -102,7 +104,7 @@ void MixedCodec::freq_decode(string& raw, const wide_string_view& encoded) const
 void MixedCodec::freq_learn(const vector<string_view>& all_samples) {
   const size_t max_len = 16.0 * ((this->power + 1.0) / 10.0);
   const size_t max_exp = 1 << (8 + max_len / 2);
-  const size_t max_cnt = std::min(DICT_SIZE, max_exp) - 256;
+  const size_t max_cnt = std::min(DICT_SIZE, max_exp) - 256 - max_len;
   Trie::Trie tmp_trie;
   for (size_t idx = 0; idx < all_samples.size(); idx += 2) {
     const auto& sv = all_samples[idx];
@@ -182,7 +184,7 @@ void MixedCodec::huff_encode(string& encoded, const wide_string_view& raw) const
 }
 
 void MixedCodec::huff_decode(wide_string& raw, const string_view& encoded) const {
-  raw.reserve(encoded.size() * 2);
+  // raw.reserve(encoded.size() * 2);
   const size_t rest = ((encoded[0] >> (CHAR_SIZE - log_char_size)) &
     ((1 << log_char_size) - 1));
   const size_t size = (encoded.size() - 1) * CHAR_SIZE + rest;
@@ -196,7 +198,7 @@ void MixedCodec::huff_decode(wide_string& raw, const string_view& encoded) const
   for (size_t j = iter; j < size;) {
     size_t pos = this->tree.size() - 1;  // position of root node
     while (!tree_ptr[pos].is_leaf) {
-      const auto pair = this->tree_table[pos - (DICT_SIZE - 1)][ch & MASK];
+      const auto pair = this->tree_table[pos - (DICT_SIZE - 1)][ch];
       const size_t wasted = pair.first;
       pos = pair.second;
       j += wasted;
@@ -206,6 +208,7 @@ void MixedCodec::huff_decode(wide_string& raw, const string_view& encoded) const
       iter += wasted;
       if (iter >= CHAR_SIZE) {
         iter -= CHAR_SIZE;
+        // next_ch = ++index != encoded.end() ? *index : 0;
         next_ch = *(++index);
         ch ^= (next_ch >> (CHAR_SIZE - iter));
         next_ch <<= iter;
@@ -324,7 +327,7 @@ void MixedCodec::build_tree(Heap& heap) {
 
 void MixedCodec::build_table() {
   for (size_t i = 0; i < DICT_SIZE; ++i) {
-    const auto& codes = this->table[static_cast<UCharT>(this->tree[i].sym)];
+    auto& codes = this->table[static_cast<UCharT>(this->tree[i].sym)];
     for (size_t j = 0; j < CHAR_SIZE; ++j) {
       codes[j] = bools_to_string(this->tree.get_code(i), j);
     }
@@ -332,13 +335,13 @@ void MixedCodec::build_table() {
 }
 
 void MixedCodec::find_all_ways() {
-  UCharT ch = 0;
+  uint8_t ch = 0;
   do {
     UCharT pos = 0;
     do {
       this->tree_table[pos][ch] = this->tree.find_way(ch, pos + DICT_SIZE - 1);
     } while (++pos != DICT_SIZE);
-  } while (++ch != DICT_SIZE);
+  } while (++ch != 0);
 }
 
 }  // namespace Codecs
