@@ -48,12 +48,6 @@ void MixedCodec::encode(string& encoded, const string_view& raw) const {
   wide_string tmp;
   this->freq_encode(tmp, raw);
   this->huff_encode(encoded, tmp);
-  // wide_string olo;
-  // this->huff_decode(olo, encoded);
-  // if (tmp != olo) {
-  //   std::cout << "1) " << print_string_binary(tmp) << std::endl;
-  //   std::cout << "2) " << print_string_binary(olo) << std::endl;
-  // }
 }
 
 void MixedCodec::decode(string& raw, const string_view& encoded) const {
@@ -66,8 +60,7 @@ using FreqIndexType = uint16_t;
 
 void MixedCodec::freq_encode(wide_string& encoded, const string_view& raw) const {
   const auto& trie_data = this->trie.data();
-  std::vector<FreqIndexType> res;
-  // res.reserve(raw.size());
+  encoded.reserve(raw.size() / sizeof(char) * sizeof(CharT));
   FreqIndexType nd_ptr = 0;
   for (auto ch = raw.begin(); ch != raw.end();) {
     const auto iter = trie_data[nd_ptr].children[static_cast<uint8_t>(*ch)];
@@ -75,27 +68,16 @@ void MixedCodec::freq_encode(wide_string& encoded, const string_view& raw) const
       ++ch;
       nd_ptr = iter;
     } else {
-      res.push_back(nd_ptr);
+      encoded.push_back(nd_ptr);
       nd_ptr = 0;
     }
   }
   if (nd_ptr != 0) {
-    res.push_back(nd_ptr);
+    encoded.push_back(nd_ptr);
   }
-  std::cout << "1 -- " << res.size() << std::endl;
-  const size_t sz = res.size() * sizeof(FreqIndexType) / sizeof(CharT);
-  encoded.resize(sz);
-  memcpy(reinterpret_cast<char*>(const_cast<CharT*>(encoded.data())),
-    res.data(), sz);
 }
 
 void MixedCodec::freq_decode(string& raw, const wide_string_view& encoded) const {
-  std::vector<FreqIndexType> res(encoded.size() * sizeof(CharT) /
-    sizeof(FreqIndexType));
-  memcpy(const_cast<FreqIndexType*>(res.data()), encoded.data(),
-    encoded.size() * sizeof(CharT));
-  std::cout << "2 -- " << res.size() << std::endl;
-  // raw.reserve(encoded.size() * 4);
   for (const auto& nd : encoded) {
     raw += this->strs[nd];
   }
@@ -184,7 +166,7 @@ void MixedCodec::huff_encode(string& encoded, const wide_string_view& raw) const
 }
 
 void MixedCodec::huff_decode(wide_string& raw, const string_view& encoded) const {
-  // raw.reserve(encoded.size() * 2);
+  raw.reserve(4 * encoded.size() / sizeof(char) * sizeof(CharT));
   const size_t rest = ((encoded[0] >> (CHAR_SIZE - log_char_size)) &
     ((1 << log_char_size) - 1));
   const size_t size = (encoded.size() - 1) * CHAR_SIZE + rest;
