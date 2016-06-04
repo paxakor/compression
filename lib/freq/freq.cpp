@@ -77,17 +77,17 @@ void FreqCodec::learn(const vector<string>& all_samples) {
     const auto& sv = all_samples[idx];
     const auto sv_sz = sv.size();
     if (len <= sv_sz) {
-      for (size_t k = 0; k + len < sv_sz; ++k) {
+      for (size_t k = 0; k + len < sv_sz; k += 2) {
         bool good = true;
         for (size_t l = len; good && k + l < sv_sz && l < 256; l += len) {
           good = tmp_trie.add(sv.substr(k, l));
         }
       }
-      for (size_t k = 0; k < len; ++k) {
+      for (size_t k = 0; k < len; k += 2) {
         tmp_trie.add(sv.substr(sv_sz - len + k, len - k));
       }
     } else {
-      for (size_t k = 0; k < sv_sz; ++k) {
+      for (size_t k = 0; k < sv_sz; k += 2) {
         tmp_trie.add(sv.substr(k, sv_sz - k));
       }
     }
