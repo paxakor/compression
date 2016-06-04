@@ -28,13 +28,11 @@ matrix:
 #   - cd ..
 
 script:
-  - mkdir build
-  - cd build
-  - cmake ..
-  - make
-  - cd testers
+  - mkdir build && cd build
+  - cmake .. && make -j 16
+  - cd tester
   - dd if=/dev/urandom of=./data bs=8M count=4
-  - ./main_tester/tester -9 -s ./data
+  - testers/main_tester/tester data
 
 notifications:
   email: false
