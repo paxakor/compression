@@ -9,7 +9,7 @@ using std::string;
 struct Args {
   int exit = 0;
   bool read_block = false;
-  size_t power = 5;
+  size_t power = 9;
   string file_name;
 };
 
