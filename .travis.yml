@@ -36,9 +36,8 @@ os: linux
 
 script:
   - mkdir build && cd build
-  - cmake .. && make -j 16
-  - cd tester
   - dd if=/dev/urandom of=./data bs=8M count=4
+  - cmake .. && make -j 16
   - testers/main_tester/tester data
 
 notifications:
