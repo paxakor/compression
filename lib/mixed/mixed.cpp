@@ -83,22 +83,25 @@ void MixedCodec::freq_decode(string& raw, const wide_string_view& encoded) const
 }
 
 void MixedCodec::freq_learn(const vector<string_view>& all_samples) {
-  const size_t max_len = 16.0 * ((this->power + 1.0) / 10.0);
-  const size_t max_exp = 1 << (8 + max_len / 2);
-  const size_t max_cnt = std::min(DICT_SIZE, max_exp) - 256 - max_len;
+  const size_t len = 16.0 * ((this->power + 1.0) / 10.0);
+  const size_t max_exp = 1 << (8 + len / 2);
+  const size_t max_cnt = std::min(DICT_SIZE, max_exp) - 256 - len;
   Trie::Trie tmp_trie;
   for (size_t idx = 0; idx < all_samples.size(); idx += 2) {
     const auto& sv = all_samples[idx];
     const auto sv_sz = sv.size();
-    for (size_t k = 0; k + max_len < sv_sz; ++k) {
-      tmp_trie.add(sv.substr(k, max_len));
-    }
-    if (max_len <= sv_sz) {
-      for (size_t k = 0; k < max_len; ++k) {
-        tmp_trie.add(sv.substr(sv_sz - max_len + k, max_len - k));
+    if (len <= sv_sz) {
+      for (size_t k = 0; k + len < sv_sz; k += 4) {
+        bool good = true;
+        for (size_t l = len; good && k + l < sv_sz && l < 256; l += len) {
+          good = tmp_trie.add(sv.substr(k, l));
+        }
+      }
+      for (size_t k = 0; k < len; k += 4) {
+        tmp_trie.add(sv.substr(sv_sz - len + k, len - k));
       }
     } else {
-      for (size_t k = 0; k < sv_sz; ++k) {
+      for (size_t k = 0; k < sv_sz; k += 4) {
         tmp_trie.add(sv.substr(k, sv_sz - k));
       }
     }
@@ -122,7 +125,10 @@ void MixedCodec::freq_learn(const vector<string_view>& all_samples) {
   std::vector< std::pair<size_t, size_t> > best_nodes;
   for (size_t i = 0; i < frequency.size(); ++i) {
     if (frequency[i] > 0) {
-      best_nodes.emplace_back(frequency[i], i);
+      const auto str = tmp_trie.get_string(i);
+      const size_t freq1 = frequency[i];
+      const size_t freq2 = freq1 * sqrt(log2(str.size()));
+      best_nodes.emplace_back(freq2, i);
     }
   }
   std::sort(best_nodes.begin(), best_nodes.end(),
