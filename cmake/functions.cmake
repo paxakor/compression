@@ -43,7 +43,7 @@ function(add_compile_flags FLAGS)
     add_flag("-ggdb")
     # add_flag("-fsanitize=address")
     # add_flag("-fsanitize=leak")
-    add_flag("-fsanitize=undefined")
+    # add_flag("-fsanitize=undefined")
   endif()
 
   set(${FLAGS} "${${FLAGS}} ${TMP_FLAGS}" PARENT_SCOPE)

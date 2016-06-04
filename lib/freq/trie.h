@@ -21,7 +21,7 @@ public:
 class Trie {
 public:
   Trie();
-  template <typename Str> void add(const Str&);
+  template <typename Str> bool add(const Str&);
   template <typename Str> size_t count(const Str&) const;
   const std::vector<Node>& data() const;
   void clear();
@@ -32,11 +32,13 @@ protected:
 };
 
 template <typename Str>
-void Trie::add(const Str& str) {
+bool Trie::add(const Str& str) {
+  bool ans = true;
   size_t node_iter = 0;
   for (const auto& ch : str) {
     const auto it = this->nodes[node_iter].children[static_cast<uint8_t>(ch)];
     if (it == 0) {
+      ans = false;
       const size_t sz = this->nodes.size();
       this->nodes.emplace_back(node_iter, ch);
       this->nodes[node_iter].children[static_cast<uint8_t>(ch)] = sz;
@@ -46,6 +48,7 @@ void Trie::add(const Str& str) {
     }
     ++(this->nodes[node_iter].term);
   }
+  return ans;
 }
 
 template <typename Str>
