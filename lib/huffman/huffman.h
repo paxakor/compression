@@ -20,7 +20,6 @@ using Heap = std::priority_queue< Pair, vector<Pair>, std::greater<Pair> >;
 class HuffmanCodec : public CodecIFace {
 public:
   HuffmanCodec();
-  ~HuffmanCodec();
 
   void encode(string&, const string&) const override;
   void decode(string&, const string&) const override;
@@ -43,10 +42,9 @@ protected:
   void find_all_ways();
 
   Tree tree;
-  string** table;
-  SmallPair** tree_table;
-  size_t* frequency;
-  static constexpr size_t fr_sz = DICT_SIZE * sizeof(size_t);
+  vector< vector<string> > table;
+  vector< vector<SmallPair> > tree_table;
+  vector<size_t> frequency;
 };
 
 }  // namespace Codecs

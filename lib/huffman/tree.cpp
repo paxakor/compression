@@ -65,13 +65,14 @@ std::vector<bool> Tree::get_code(size_t pos) const {
 
 SmallPair Tree::find_way(char ch, size_t pos) const {
   size_t i = CHAR_SIZE;
+  uint8_t bit = 1 << (CHAR_SIZE - 1);
   while (i != 0 && !this->at(pos).is_leaf) {
-    if (ch & (1 << (CHAR_SIZE - 1))) {
+    if (ch & bit) {
       pos = this->at(pos).child_l;
     } else {
       pos = this->at(pos).child_r;
     }
-    ch = ch << 1;
+    bit >>= 1;
     --i;
   }
   return {CHAR_SIZE - i, pos};

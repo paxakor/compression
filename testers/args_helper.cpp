@@ -9,7 +9,7 @@ constexpr char help_message[] =
 R"(Usage: tester [option] [FILE]
 Options:
   -h, --help    print this message and exit
-  -1 ... -9     compress faster(1) or better(9) (default = 9)
+  -1 ... -9     compress faster(1) or better(9) (default = 7)
   -s            read strings (default)
   -b            read blocks: "LE uint32_t (size) + record")";
 

@@ -14,32 +14,15 @@ const size_t log_char_size = ceil(log2(CHAR_SIZE));
 
 HuffmanCodec::HuffmanCodec()
   : tree()
-  , table(new string*[DICT_SIZE])
-  , tree_table(new SmallPair*[DICT_SIZE])
-  , frequency(new size_t[DICT_SIZE]) {
-  for (size_t i = 0; i < DICT_SIZE; ++i) {
-    this->table[i] = new string[CHAR_SIZE];
+  , table(DICT_SIZE)
+  , tree_table(DICT_SIZE)
+  , frequency(DICT_SIZE, 0) {
+  for (auto& line : this->table) {
+    line.resize(CHAR_SIZE);
   }
-
-  for (size_t i = 0; i < DICT_SIZE; ++i) {
-    this->tree_table[i] = new SmallPair[DICT_SIZE];
+  for (auto& line : this->tree_table) {
+    line.resize(DICT_SIZE);
   }
-
-  memset(this->frequency, 0, fr_sz);
-}
-
-HuffmanCodec::~HuffmanCodec() {
-  for (size_t i = 0; i < DICT_SIZE; ++i) {
-    delete[] this->table[i];
-  }
-  delete[] this->table;
-
-  for (size_t i = 0; i < DICT_SIZE; ++i) {
-    delete[] this->tree_table[i];
-  }
-  delete[] this->tree_table;
-
-  delete[] this->frequency;
 }
 
 void HuffmanCodec::encode(string& encoded, const string& raw) const {
@@ -77,8 +60,9 @@ void HuffmanCodec::decode(string& raw, const string& encoded) const {
   const auto tree_ptr = this->tree.data();
   auto index = encoded.begin();
   auto iter = log_char_size;
-  uint8_t ch = *index << iter;
+  uint8_t ch = *index;
   uint8_t next_ch = *(++index);
+  ch <<= iter;
   ch ^= (next_ch >> (CHAR_SIZE - iter));
   next_ch <<= iter;
   for (size_t j = iter; j < size;) {
@@ -104,9 +88,10 @@ void HuffmanCodec::decode(string& raw, const string& encoded) const {
 }
 
 string HuffmanCodec::save() const {
+  const auto fr_sz = this->frequency.size() * sizeof(size_t);
   string data;
   data.resize(fr_sz);
-  memcpy(const_cast<char*>(data.data()), this->frequency, fr_sz);
+  memcpy(const_cast<char*>(data.data()), this->frequency.data(), fr_sz);
   return data;
 }
 
@@ -140,7 +125,8 @@ void HuffmanCodec::precalc_frequency(const vector<string>& all_samples) {
 }
 
 void HuffmanCodec::load_frequency(const string& config) {
-  memcpy(this->frequency, config.data(), fr_sz);
+  const auto fr_sz = this->frequency.size() * sizeof(size_t);
+  memcpy(const_cast<size_t*>(this->frequency.data()), config.data(), fr_sz);
 }
 
 void HuffmanCodec::learn_or_load_all() {
@@ -176,7 +162,7 @@ void HuffmanCodec::build_tree(Heap& heap) {
 
 void HuffmanCodec::build_table() {
   for (size_t i = 0; i < DICT_SIZE; ++i) {
-    const auto& codes = this->table[static_cast<uint8_t>(this->tree[i].sym)];
+    auto& codes = this->table[static_cast<uint8_t>(this->tree[i].sym)];
     for (size_t j = 0; j < CHAR_SIZE; ++j) {
       codes[j] = bools_to_string(this->tree.get_code(i), j);
     }
