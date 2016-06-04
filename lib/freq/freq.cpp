@@ -66,14 +66,11 @@ void FreqCodec::load(const string& config) {
     this->strs_for_build.push_back(config.substr(i, sz));
     i += sz;
   }
-  for (const auto& s : this->strs_for_build) {
-    this->trie.add(s);
-  }
   this->build_trie();
 }
 
 void FreqCodec::learn(const vector<string>& all_samples) {
-  const size_t len = 16.0 * ((this->power + 1.0) / 10.0);
+  const size_t len = 4 + 12.0 * ((this->power + 1.0) / 10.0);
   const size_t max_cnt = (1 << (8 + len / 2)) - 256;
   Trie::Trie tmp_trie;
   for (size_t idx = 0; idx < all_samples.size(); idx += 2) {
@@ -82,7 +79,7 @@ void FreqCodec::learn(const vector<string>& all_samples) {
     if (len <= sv_sz) {
       for (size_t k = 0; k + len < sv_sz; ++k) {
         bool good = true;
-        for (size_t l = len; good && k + l < sv_sz; l += len) {
+        for (size_t l = len; good && k + l < sv_sz && l < 256; l += len) {
           good = tmp_trie.add(sv.substr(k, l));
         }
       }
@@ -114,22 +111,27 @@ void FreqCodec::learn(const vector<string>& all_samples) {
   std::vector< std::pair<size_t, size_t> > best_nodes;
   for (size_t i = 0; i < frequency.size(); ++i) {
     if (frequency[i] > 0) {
-      best_nodes.emplace_back(frequency[i], i);
+      const auto str = tmp_trie.get_string(i);
+      const size_t freq1 = frequency[i];
+      const size_t freq2 = freq1 * sqrt(log2(str.size()));
+      best_nodes.emplace_back(std::max(freq1, freq2), i);
     }
   }
   std::sort(best_nodes.begin(), best_nodes.end(),
     std::greater< decltype(best_nodes)::value_type >());
 
   for (size_t i = 0; i < best_nodes.size() &&
-    this->trie.data().size() < max_cnt; ++i) {
+    this->strs_for_build.size() < max_cnt; ++i) {
     const auto str = tmp_trie.get_string(best_nodes[i].second);
     this->strs_for_build.push_back(str);
-    this->trie.add(str);
   }
   this->build_trie();
 }
 
 void FreqCodec::build_trie() {
+  for (const auto& s : this->strs_for_build) {
+    this->trie.add(s);
+  }
   this->trie.add_all_chars();
   this->strs.resize(this->trie.data().size());
   for (size_t i = 0; i < strs.size(); ++i) {
@@ -140,7 +142,7 @@ void FreqCodec::build_trie() {
 size_t FreqCodec::sample_size(size_t records_total) const {
   constexpr size_t min_size = 16;
   constexpr size_t max_size = 1e5;
-  const size_t n = ceil(log2(records_total));
+  const size_t n = ceil(2 * log2(records_total));
   return std::min(std::min(std::max(min_size, n),
     max_size) * this->power, records_total);
 }
