@@ -60,8 +60,9 @@ void HuffmanCodec::decode(string& raw, const string& encoded) const {
   const auto tree_ptr = this->tree.data();
   auto index = encoded.begin();
   auto iter = log_char_size;
-  uint8_t ch = *index << iter;
+  uint8_t ch = *index;
   uint8_t next_ch = *(++index);
+  ch <<= iter;
   ch ^= (next_ch >> (CHAR_SIZE - iter));
   next_ch <<= iter;
   for (size_t j = iter; j < size;) {
