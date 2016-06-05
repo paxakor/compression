@@ -18,11 +18,11 @@ string TrivialCodec::save() const {
   return "";
 }
 
-void TrivialCodec::load(const string& config) { }
+void TrivialCodec::load(const string& /* config */) { }
 
-void TrivialCodec::learn(const vector<string>& all_samples) { }
+void TrivialCodec::learn(const vector<string>& /* all_samples */) { }
 
-size_t TrivialCodec::sample_size(size_t records_total) const {
+size_t TrivialCodec::sample_size(size_t /* records_total */) const {
   return 0;
 }
 
