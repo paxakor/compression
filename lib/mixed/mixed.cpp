@@ -108,7 +108,7 @@ void MixedCodec::freq_learn(const vector<string_view>& all_samples) {
   }
   tmp_trie.add_all_chars();
   const auto& trie_data = tmp_trie.data();
-  std::vector<size_t> frequency(trie_data.size(), 0);
+  std::vector<size_t> tmp_frequency(trie_data.size(), 0);
   for (size_t idx = 1; idx < all_samples.size(); idx += 2) {
     const auto& sv = all_samples[idx];
     size_t nd_ptr = 0;
@@ -117,16 +117,16 @@ void MixedCodec::freq_learn(const vector<string_view>& all_samples) {
       if (iter != 0) {
         ++ch;
       } else {
-        ++frequency[nd_ptr];
+        ++tmp_frequency[nd_ptr];
       }
       nd_ptr = iter;
     }
   }
   std::vector< std::pair<size_t, size_t> > best_nodes;
-  for (size_t i = 0; i < frequency.size(); ++i) {
-    if (frequency[i] > 0) {
+  for (size_t i = 0; i < tmp_frequency.size(); ++i) {
+    if (tmp_frequency[i] > 0) {
       const auto str = tmp_trie.get_string(i);
-      const size_t freq1 = frequency[i];
+      const size_t freq1 = tmp_frequency[i];
       const size_t freq2 = freq1 * sqrt(log2(str.size()));
       best_nodes.emplace_back(freq2, i);
     }
