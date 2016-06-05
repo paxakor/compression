@@ -39,12 +39,18 @@ void FreqCodec::encode(string& encoded, const string& raw) const {
   }
   const size_t sz = res.size() * sizeof(IndexType);
   encoded.resize(sz);
-  memcpy(const_cast<char*>(encoded.data()), res.data(), sz);
+  auto enc_ptr = const_cast<char*>(encoded.data());
+  if (enc_ptr != nullptr && res.data() != nullptr) {
+    memcpy(enc_ptr, res.data(), sz);
+  }
 }
 
 void FreqCodec::decode(string& raw, const string& encoded) const {
   std::vector<IndexType> res(encoded.size() / sizeof(IndexType));
-  memcpy(const_cast<IndexType*>(res.data()), encoded.data(), encoded.size());
+  auto res_ptr = const_cast<IndexType*>(res.data());
+  if (res_ptr != nullptr && encoded.data() != nullptr) {
+    memcpy(res_ptr, encoded.data(), encoded.size());
+  }
   raw.reserve(encoded.size() * 4);
   for (const auto& nd : res) {
     raw += this->strs[nd];

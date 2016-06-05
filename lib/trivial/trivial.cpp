@@ -14,7 +14,9 @@ void TrivialCodec::decode(string& raw, const string& encoded) const {
   raw = encoded;
 }
 
-string TrivialCodec::save() const { }
+string TrivialCodec::save() const {
+  return "";
+}
 
 void TrivialCodec::load(const string& config) { }
 
